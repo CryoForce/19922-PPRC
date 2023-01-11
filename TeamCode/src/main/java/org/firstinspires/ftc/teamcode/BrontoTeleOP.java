@@ -173,7 +173,7 @@ public class BrontoTeleOP extends OpMode
             case DELIVERING:
                 telemetry.addData("Arm State", "High Pole");
                 //TODO: check if should be -= and adjust target
-                backElbowTarget += bronto.moveByDistance(bronto.backDistanceSensor, 150);
+                backElbowTarget += bronto.moveByDistance(bronto.backDistanceSensor, 93);
                 outakePow = -1;
                 if  (bronto.returnColor(bronto.backIntakeSensor) == "unknown"){
                     outakePow = 0;}
@@ -187,7 +187,7 @@ public class BrontoTeleOP extends OpMode
                         distance from the ground
                         TODO: check if should be -= and adjust target
                          */
-                frontElbowTarget += bronto.moveByDistance(bronto.frontDistanceSensor, 7);
+                frontElbowTarget += bronto.moveByDistance(bronto.frontDistanceSensor, 9);
                 intakePow = 1;
                 if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown"){
                     intakePow = 0;}

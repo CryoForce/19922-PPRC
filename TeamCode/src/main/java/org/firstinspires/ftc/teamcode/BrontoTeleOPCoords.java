@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 //@Disabled
-@TeleOp(name="Bronto's TeleOp", group="Iterative Opmode")
+@TeleOp(name="Bronto's Coords", group="Iterative Opmode")
 
 public class BrontoTeleOPCoords extends OpMode
 {
@@ -33,10 +33,10 @@ public class BrontoTeleOPCoords extends OpMode
     int backArmTarget = 0;
     int frontElbowTarget = 0;
     int backElbowTarget = 0;
-    double frontX = bronto.frontElbowComponent.elbowLength; //instance doesnt actually matter
-    double frontY = - bronto.frontArmComponent.armLength;
-    double backX = bronto.backElbowComponent.elbowLength; //instance doesnt actually matter
-    double backY = - bronto.backArmComponent.armLength;
+    double frontX; //instance doesnt actually matter
+    double frontY;
+    double backX; //instance doesnt actually matter
+    double backY;
 
     TeleOpStates state = TeleOpStates.RESTING;
     TeleOpStates nextState = TeleOpStates.UNKNOWN; //determines when a moving state completes and will go to
@@ -54,6 +54,11 @@ public class BrontoTeleOPCoords extends OpMode
         bronto.frontArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bronto.backElbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bronto.backArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        frontX = bronto.frontElbowComponent.elbowLength; //instance doesnt actually matter
+        frontY = - bronto.frontArmComponent.armLength;
+        backX = bronto.backElbowComponent.elbowLength; //instance doesnt actually matter
+        backY = - bronto.backArmComponent.armLength;
 
         //backArmTarget = bronto.backArmHighPos; //set back arm to back high pole immediately for power draw issues
 
@@ -139,6 +144,10 @@ public class BrontoTeleOPCoords extends OpMode
             rightBPower = 0;
         }
 
+        if (gamepad2.y) {
+            frontX = bronto.frontArmComponent.armLength + bronto.frontElbowComponent.elbowLength;
+            frontY = 0;
+        }
 
         /*if (gamepad2.y) {
             state = TeleOpStates.MOVING;
@@ -242,10 +251,14 @@ public class BrontoTeleOPCoords extends OpMode
         bronto.backIntakeL.setPower(outakePow);
         bronto.backIntakeR.setPower(outakePow);
 
-        frontArmTarget = bronto.frontArmComponent.armTicksUsingCoords(frontX, frontY);
-        frontElbowTarget = bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY);
-        backArmTarget = bronto.backArmComponent.armTicksUsingCoords(backX, backY);
-        backElbowTarget = bronto.backElbowComponent.elbowTicksUsingCoords(backX, backY);
+        frontArmTarget = (int)bronto.frontArmComponent.armTicksUsingCoords(frontX, frontY);
+        frontElbowTarget = (int)(bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY)
+                + bronto.frontArmComponent.armAngleUsingCoords(frontX, frontY)
+                * bronto.frontElbowComponent.ticks_per_degree); //same as below
+        backArmTarget = (int)bronto.backArmComponent.armTicksUsingCoords(backX, backY);
+        backElbowTarget = (int)(bronto.backElbowComponent.elbowTicksUsingCoords(backX, backY)
+                + bronto.backArmComponent.armAngleUsingCoords(backX, backY)
+                * bronto.backElbowComponent.ticks_per_degree); //im not sure what needs to be added here but something has to account for arm position/angle
 
         /*if arm motors are close enough, set to 0 b/c power draw and worm gear already holds it
         now also checking if buttons are pressed,
@@ -253,6 +266,8 @@ public class BrontoTeleOPCoords extends OpMode
         button is pressed when state is not resting, this might be really bad but idk
         TODO: TEST THIS CRAP
          */
+
+        /*
         if (bronto.frontArmComponent.closeEnough(frontArmTarget, 5) ||
                 (bronto.frontButton.isPressed() && state != TeleOpStates.RESTING)) {
             bronto.frontArm.setPower(0);
@@ -264,13 +279,15 @@ public class BrontoTeleOPCoords extends OpMode
         bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
         bronto.backElbowComponent.moveUsingPID(backElbowTarget);
 
-        telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
+         */
+
+        telemetry.addData("frontArm Trgt", frontArmTarget);
         telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
-        telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
+        telemetry.addData("frontElbow Trgt", frontElbowTarget);
         telemetry.addData("frontElbow Pwr", bronto.frontElbow.getPower());
-        telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
+        telemetry.addData("backArm Trgt", backArmTarget);
         telemetry.addData("backArm Pwr", bronto.backArm.getPower());
-        telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
+        telemetry.addData("backElbow Trgt", backElbowTarget);
         telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
         //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
         // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
