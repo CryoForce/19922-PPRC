@@ -114,15 +114,15 @@ public class BrontoTeleOPCoords extends OpMode
 
         //manual arm control
         if (gamepad2.left_stick_x != 0) { //manual control just changes target, large numbers b/c large ticks needed
-            backX += (gamepad2.left_stick_x);
+            backX += .01 * (gamepad2.left_stick_x);
         } else if (gamepad2.left_stick_y != 0) {
-            backY += (gamepad2.left_stick_y);
+            backY += .01 * (gamepad2.left_stick_y);
         }
 
         if (gamepad2.right_stick_x != 0) {
-            frontX += (gamepad2.right_stick_x);
+            frontX += .01 * (gamepad2.right_stick_x);
         } else if (gamepad2.right_stick_y != 0) {
-            frontY += (gamepad2.right_stick_y);
+            frontY += .01 * (gamepad2.right_stick_y);
         }
 
         //calculate drive pwr
@@ -251,15 +251,22 @@ public class BrontoTeleOPCoords extends OpMode
         bronto.backIntakeL.setPower(outakePow);
         bronto.backIntakeR.setPower(outakePow);
 
-        frontArmTarget = (int)bronto.frontArmComponent.armTicksUsingCoords(frontX, frontY);
-        frontElbowTarget = (int)(bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY)
-                + bronto.frontArmComponent.armAngleUsingCoords(frontX, frontY)
-                * bronto.frontElbowComponent.ticks_per_degree); //same as below
-        backArmTarget = (int)bronto.backArmComponent.armTicksUsingCoords(backX, backY);
-        backElbowTarget = (int)(bronto.backElbowComponent.elbowTicksUsingCoords(backX, backY)
-                + bronto.backArmComponent.armAngleUsingCoords(backX, backY)
-                * bronto.backElbowComponent.ticks_per_degree); //im not sure what needs to be added here but something has to account for arm position/angle
+        double frontArmAngle = bronto.frontArmComponent.armAngleUsingCoords(frontX, frontY);
+        double backArmAngle = bronto.backArmComponent.armAngleUsingCoords(backX, backY);
 
+        frontArmTarget = (int)bronto.frontArmComponent.armTicksUsingAngle(frontArmAngle);
+        frontElbowTarget = (int)(bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY)
+                - ((frontArmAngle + 90) //add 90 to get relative angle
+                * bronto.frontElbowComponent.ticks_per_degree)); //same as below
+        backArmTarget = (int)bronto.backArmComponent.armTicksUsingAngle(backArmAngle);
+        backElbowTarget = (int)(bronto.backElbowComponent.elbowTicksUsingCoords(backX, backY)
+                - ((backArmAngle + 90) //add 90 to get relative angle
+                * bronto.backElbowComponent.ticks_per_degree)); //im not sure what needs to be added here but something has to account for arm position/angle
+
+        telemetry.addData("Front Elbow Ticks",bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY) );
+        telemetry.addData("Front Arm Angle", frontArmAngle +90);
+        telemetry.addData("Front Elbow Ticks per Degree * Arm Angle",
+                (frontArmAngle +90) * bronto.frontElbowComponent.ticks_per_degree);
         /*if arm motors are close enough, set to 0 b/c power draw and worm gear already holds it
         now also checking if buttons are pressed,
         ok this is an OR that will set power to 0 if position is close enough OR
