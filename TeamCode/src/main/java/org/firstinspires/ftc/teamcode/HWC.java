@@ -105,7 +105,7 @@ public class HWC {
     int backElbowTransPos = -417;
     int backElbowLowPos = 1679;
     int backElbowMedPos = 1365;
-    int backElbowHighPos = 1788;
+    int backElbowHighPos = -1050;
 
     public RobotComponents frontArmComponent;
     public RobotComponents backArmComponent;
@@ -198,9 +198,9 @@ public class HWC {
     //all this does is check how far off it is from a target then returns an int to adjust encoder target
     public int moveByDistance (DistanceSensor sensor, int target) {
         if ((int) sensor.getDistance(DistanceUnit.CM) - target < 0) {
-            return 5;
+            return 1;
         } else if ((int) sensor.getDistance(DistanceUnit.CM) - target > 0) {
-            return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+            return -1; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
         }
         return 0;
     }
