@@ -107,6 +107,9 @@ public class HWC {
     int backElbowMedPos = 1365;
     int backElbowHighPos = 1788;
 
+    int testingDistance = 100;
+    double testingButtonValue = 0.9;
+
     public RobotComponents frontArmComponent;
     public RobotComponents backArmComponent;
     public RobotComponents frontElbowComponent;
@@ -219,7 +222,6 @@ public class HWC {
             backIntakeR.setPower(-power);
         }
     }
-
     public String returnColor(ColorSensor CS) {
         int red = CS.red();
         int green = CS.green();
@@ -243,6 +245,16 @@ public class HWC {
         while (time.milliseconds() > milliseconds){}
         return true;
 
+    }
+
+    public int fixEncoderPos(DistanceSensor distance,TouchSensor button, int prevPos){
+        if (distance.getDistance(DistanceUnit.CM) > testingDistance + 2 && button.getValue() != testingButtonValue){
+return -10;
+        }
+        if (distance.getDistance(DistanceUnit.CM) < testingDistance - 2 && button.getValue() != testingButtonValue){
+            return 10;
+        }
+        return 0;
     }
 
     // Function used to move any motor to different positions and hold it.
