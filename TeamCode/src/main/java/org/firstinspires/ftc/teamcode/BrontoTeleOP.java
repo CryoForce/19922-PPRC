@@ -36,6 +36,8 @@ public class BrontoTeleOP extends OpMode
     int frontElbowTarget = 0;
     int backElbowTarget = 0;
 
+    double [] distances = new double [3];
+
     TeleOpStates state = TeleOpStates.RESTING;
     TeleOpStates nextState = TeleOpStates.UNKNOWN; //determines when a moving state completes and will go to
 
@@ -154,13 +156,13 @@ public class BrontoTeleOP extends OpMode
             backElbowTarget = bronto.backElbowHighPos;
             frontArmTarget = bronto.frontArmIntakePos;
             backArmTarget = bronto.backArmHighPos;
-        } else if (gamepad1.b) {
+        } else if (gamepad1.b) { //changing from medium pole to intake cuz apparently thats not here
             state = TeleOpStates.MOVING;
-            nextState = TeleOpStates.DELIVERING;
+            nextState = TeleOpStates.INTAKE;
             frontElbowTarget = bronto.frontElbowIntakePos;
-            backElbowTarget = bronto.backElbowMedPos;
+            backElbowTarget = bronto.backElbowHighPos;
             frontArmTarget = bronto.frontArmIntakePos;
-            backArmTarget = bronto.backArmMedPos;
+            backArmTarget = bronto.backArmHighPos;
         } else if (gamepad1.a) {
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.DELIVERING;
@@ -178,8 +180,26 @@ public class BrontoTeleOP extends OpMode
                 break;
             case DELIVERING:
                 telemetry.addData("Arm State", "High Pole");
+
+                telemetry.addData("Distances Array", distances);
+                //really stupid way to do a running average but i dont care have fun!
+                double distAvg = bronto.backHighDist;
+                if (distances[2] != 0) {
+                    distances [2] = distances [1];
+                    distances [1] = distances [0];
+                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                    distAvg = (distances[0] + distances[1] + distances[2]) / 3;
+                } else if (distances[0] == 0) {
+                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                } else if (distances[1] == 0) {
+                    distances [1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                } else {
+                    distances [2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                }
+                telemetry.addData("Distances Avg", distAvg);
+
                 //TODO: check if should be -= and adjust target
-                //backElbowTarget += bronto.moveByDistance(bronto.backDistanceSensor, 93);
+                backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
                 outakePow = -1;
                 if  (bronto.returnColor(bronto.backIntakeSensor) == "unknown"){
                     outakePow = 0;
@@ -194,8 +214,9 @@ public class BrontoTeleOP extends OpMode
                         distance from the ground
                         TODO: check if should be -= and adjust target
                          */
-                //frontElbowTarget += bronto.moveByDistance(bronto.frontDistanceSensor, 9);
-                intakePow = 1;
+                frontElbowTarget -= bronto.moveByDistance(bronto.frontDistanceSensor, bronto.frontIntakeDist);
+                intakePow = -1;
+                telemetry.addData ("Front Color: ", bronto.returnColor(bronto.frontIntakeSensor));
                 if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown"){
                     intakePow = 0;
                     state = TeleOpStates.UNKNOWN;
@@ -204,10 +225,10 @@ public class BrontoTeleOP extends OpMode
                 break;
             case MOVING:
                 telemetry.addData("Arm State", "Moving");
-                if (bronto.frontElbowComponent.closeEnough (frontElbowTarget, 2) &&
-                        bronto.backElbowComponent.closeEnough (backElbowTarget, 2) &&
-                        bronto.frontArmComponent.closeEnough(frontArmTarget, 5) &&
-                        bronto.backArmComponent.closeEnough (backArmTarget, 5)) {
+                if (bronto.frontElbowComponent.closeEnough (frontElbowTarget, 10) &&
+                        bronto.backElbowComponent.closeEnough (backElbowTarget, 10) &&
+                        bronto.frontArmComponent.closeEnough(frontArmTarget, 50) &&
+                        bronto.backArmComponent.closeEnough (backArmTarget, 50)) { //putting range high because it will keep moving
                     state = nextState;
                     nextState = TeleOpStates.UNKNOWN;
                 }
@@ -220,9 +241,15 @@ public class BrontoTeleOP extends OpMode
                 //frontElbowTarget += bronto.moveByDistance(bronto.frontDistanceSensor, 50);
                 //backElbowTarget += bronto.moveByDistance(bronto.backDistanceSensor, 50);
                 //TODO: if the above works well, we should porbably incorporate as an && for the transfer position detection rather than a constant loop
+                /*
+                //commenting out until transfer sensor is connected
                 if (bronto.returnColor(bronto.transferSensor) != "unknown"){
                     intakePow = 1;}
-                if (bronto.returnColor(bronto.backIntakeSensor) != "unknown"){
+
+                 */
+                intakePow = 1;
+                outakePow = 1;
+                if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown"){
                     intakePow = 0;
                     state = TeleOpStates.UNKNOWN;
                 }
@@ -255,11 +282,11 @@ public class BrontoTeleOP extends OpMode
          */
 
 
-        if (bronto.frontArmComponent.closeEnough(frontArmTarget, 5) ||
+        if (bronto.frontArmComponent.closeEnough(frontArmTarget, 20) ||
                 (bronto.frontButton.isPressed() && state != TeleOpStates.RESTING)) {
             bronto.frontArm.setPower(0);
         } else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
-        if (bronto.backArmComponent.closeEnough(backArmTarget, 5) ||
+        if (bronto.backArmComponent.closeEnough(backArmTarget, 20) ||
                 bronto.backButton.isPressed() && state != TeleOpStates.RESTING) {
             bronto.backArm.setPower(0);
         } else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
