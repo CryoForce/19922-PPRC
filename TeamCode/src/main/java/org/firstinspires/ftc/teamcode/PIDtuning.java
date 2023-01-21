@@ -32,6 +32,19 @@ public class PIDtuning extends OpMode {
 
     @Override
     public void loop() {
+        if (gamepad1.dpad_down) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "backElbow");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_up) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "frontElbow");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_right) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "frontArm");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_left) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "backArm");
+            p = 0; i = 0; d = 0; f = 0;
+        }
         controller.setPID (p,i,d);
         int armPos = arm_motor.getCurrentPosition();
         double pid = controller.calculate(armPos, target);

@@ -2,16 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.HWC;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name="Testing Op", group="Iterative Opmode")
 
@@ -20,7 +16,8 @@ public class testingOp extends OpMode
     /** Declare OpMode members. */
     HWC bronto;
     private ElapsedTime runtime = new ElapsedTime();
-    String color;
+    String colorFront;
+    String colorBack;
 
     @Override
     public void init() {
@@ -62,9 +59,10 @@ public class testingOp extends OpMode
     bronto.backArm.setPower(-gamepad2.left_stick_y);
     bronto.backElbow.setPower(-gamepad2.right_stick_y);
     if (gamepad1.a){
-         color = bronto.returnColor(bronto.frontIntakeSensor);
+         colorFront = bronto.returnColor(bronto.frontIntakeSensor);
+         colorBack = bronto.returnColor(bronto.backIntakeSensor);
     }
-    else  color = " ";
+    else  {colorFront = " "; colorBack = "";}
 
     /*bronto.frontIntakeL.setPower(gamepad2.left_stick_y);
     bronto.frontIntakeR.setPower(gamepad2.left_stick_y);
@@ -77,7 +75,12 @@ public class testingOp extends OpMode
         telemetry.addData("frontElbow", bronto.frontElbow.getCurrentPosition());
         telemetry.addData("backArm", bronto.backArm.getCurrentPosition());
         telemetry.addData("backElbow", bronto.backElbow.getCurrentPosition());
-        telemetry.addData("color", color);
+        telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Front color", colorFront);
+        telemetry.addData("Back color", colorBack);
+        telemetry.addData("Front Button", bronto.frontButton.isPressed());
+        telemetry.addData("Back Button", bronto.backButton.isPressed());
        telemetry.addData("Arms", "front Arm , front elbow " ,bronto.frontArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition());
         telemetry.update();
     }

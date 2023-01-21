@@ -216,7 +216,7 @@ public class OfficialTeleOp extends OpMode
                 bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArm.getCurrentPosition());
                 bronto.backArmHighPos = bronto.backArm.getCurrentPosition();
             }
-                bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.elbowDeliveryPosHigh);
+                bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.frontElbowHighPos);
                 bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowHighPos);
 
                 state = TeleOpStates.HIGH_POLE;}

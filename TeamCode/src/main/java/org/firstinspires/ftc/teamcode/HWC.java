@@ -82,13 +82,13 @@ public class HWC {
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
     //BS numbers but I needed something
     int armRestingPos = 0;
-    int frontArmIntakePos = 2164;
+    int frontArmIntakePos = 0; //changed to 0
     int frontArmLowPos = -2560;
     int frontArmMedPos = -4079;
     int frontArmHighPos = 4942;
     int frontArmTransPos = frontArmHighPos;
     int frontElbowRestPos = 0;
-    int frontElbowIntakePos = 601;
+    int frontElbowIntakePos = -204;
     int frontElbowTransPos =  524;
     int frontElbowLowPos = 942;
     int frontElbowMedPos = 1254;
@@ -105,7 +105,12 @@ public class HWC {
     int backElbowTransPos = -417;
     int backElbowLowPos = 1679;
     int backElbowMedPos = 1365;
-    int backElbowHighPos = 1788;
+    int backElbowHighPos = -1050;
+
+    int backHighDist = 93;
+    int frontIntakeDist = 10;
+    int frontTransferDist;
+    int backTransferDist;
 
     int testingDistance = 100;
     double testingButtonValue = 0.9;
@@ -128,11 +133,11 @@ public class HWC {
         backArm = hardwareMap.get(DcMotorEx.class, "backArm");
         backElbow = hardwareMap.get(DcMotorEx.class, "backElbow");
 
-        //declare all arm components with PID values, 435rpm motors have 354.5 ppr, 60rpm has 145.1 ppr multiplied by gear ratio
-        frontElbowComponent = new RobotComponents (frontElbow, 145.1, 0.03, 0.3, 0.0006, 0.05);
-        backElbowComponent = new RobotComponents (backElbow, 145.1, 0.018, 0.2, 0.001, 0.05);
-        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.024, 0.4, 0.0005, 0);
-        backArmComponent = new RobotComponents (backArm, 384.5 * 28, 0.03, 0, 0.0004, 0);
+        //declare all arm components with PID values, 435rpm motors have 384.5 ppr, 60rpm has 2786.2 ppr multiplied by gear ratio
+        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.02, 0.15, 0.0005, 0.05);
+        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.02, 0.25, 0.0005, 0.05);
+        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.04, 0.4, 0.0005, 0);
+        backArmComponent = new RobotComponents (backArm, 384.5 * 28, 0.01, .5, 0.0003, 0);
 
         // Declare servos
         frontIntakeL = hardwareMap.get(CRServo.class, "intakeL");
@@ -203,6 +208,15 @@ public class HWC {
         if ((int) sensor.getDistance(DistanceUnit.CM) - target < 0) {
             return 5;
         } else if ((int) sensor.getDistance(DistanceUnit.CM) - target > 0) {
+            return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+        }
+        return 0;
+    }
+
+    public int moveBySetDistance (double dist, int target) {
+        if ((int) dist - target < 0) {
+            return 5;
+        } else if ((int) dist - target > 0) {
             return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
         }
         return 0;
