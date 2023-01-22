@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-//@Disabled
+@Disabled
 @TeleOp(name="Bronto Simplified", group="Iterative Opmode")
 
 public class BrontoSimplified extends OpMode

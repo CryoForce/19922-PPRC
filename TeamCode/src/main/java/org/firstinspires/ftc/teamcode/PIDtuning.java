@@ -54,6 +54,7 @@ public class PIDtuning extends OpMode {
 
         arm_motor.setPower(power);
 
+        telemetry.addData("motor: ", arm_motor.getDeviceName());
         telemetry.addData("pos", armPos);
         telemetry.addData("target ", target);
         telemetry.addData("power ", power);

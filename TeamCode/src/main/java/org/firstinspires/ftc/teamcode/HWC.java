@@ -131,9 +131,9 @@ public class HWC {
         backElbow = hardwareMap.get(DcMotorEx.class, "backElbow");
 
         //declare all arm components with PID values, 435rpm motors have 384.5 ppr, 60rpm has 2786.2 ppr multiplied by gear ratio
-        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.02, 0.15, 0.0005, 0.05);
-        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.02, 0.25, 0.0005, 0.05);
-        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.04, 0.4, 0.0005, 0);
+        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.01, 0.15, 0.0005, 0.05);
+        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.01, 0.25, 0.0005, 0.05);
+        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.01, 0.0, 0.0000, 0);
         backArmComponent = new RobotComponents (backArm, 384.5 * 28, 0.01, .5, 0.0003, 0);
 
         // Declare servos
@@ -157,9 +157,9 @@ public class HWC {
 
         // Set the direction of all our motors
         leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         /*
         frontArm.setDirection(DcMotorEx.Direction.FORWARD);
@@ -203,9 +203,9 @@ public class HWC {
     //all this does is check how far off it is from a target then returns an int to adjust encoder target
     public int moveByDistance (DistanceSensor sensor, int target) {
         if ((int) sensor.getDistance(DistanceUnit.CM) - target < 0) {
-            return 5;
+            return 1;
         } else if ((int) sensor.getDistance(DistanceUnit.CM) - target > 0) {
-            return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+            return -1; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
         }
         return 0;
     }
