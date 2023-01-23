@@ -81,12 +81,13 @@ public class HWC {
 
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
     //BS numbers but I needed something
-    int armRestingPos = 0;
+    int frontArmRestPos = 0;
     int frontArmIntakePos = 0; //changed to 0
     int frontArmLowPos = -2560;
     int frontArmMedPos = -4079;
     int frontArmHighPos = 4942;
     int frontArmTransPos = frontArmHighPos;
+
     int frontElbowRestPos = 0;
     int frontElbowIntakePos = -204;
     int frontElbowTransPos =  524;
@@ -94,12 +95,14 @@ public class HWC {
     int frontElbowMedPos = 1254;
     int frontElbowHighPos = 686;
 
+
     int backArmRestPos = 0;
     int backArmIntakePos = -1325;
     int backArmLowPos = -3646;
     int backArmMedPos = -4838;
     int backArmHighPos = -5683;
     int backArmTransPos = backArmHighPos; //same
+
     int backElbowRestPos = 0;
     int backElbowIntakePos = 319;
     int backElbowTransPos = -417;

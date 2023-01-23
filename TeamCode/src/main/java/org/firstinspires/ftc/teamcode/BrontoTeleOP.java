@@ -168,7 +168,16 @@ public class BrontoTeleOP extends OpMode
             backElbowTarget = bronto.backElbowHighPos;
             frontArmTarget = bronto.frontArmIntakePos;
             backArmTarget = bronto.backArmHighPos;
-        } /* else if (gamepad1.a) {
+        } else if (gamepad1.a && gamepad1.y) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.RESTING;
+            frontElbowTarget = bronto.frontElbowRestPos;
+            backElbowTarget = bronto.backElbowRestPos;
+            frontArmTarget = bronto.frontArmRestPos;
+            backArmTarget = bronto.backArmRestPos;
+        }
+
+        /* else if (gamepad1.a) {
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.DELIVERING;
             frontElbowTarget = bronto.frontElbowIntakePos;
