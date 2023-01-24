@@ -55,6 +55,11 @@ public class BrontoTeleOP extends OpMode
         bronto.backElbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bronto.backArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        bronto.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        bronto.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+
         backArmTarget = bronto.backArmHighPos; //set back arm to back high pole immediately for power draw issues
 
         telemetry.addData("Status", "Initialized");
@@ -142,7 +147,7 @@ public class BrontoTeleOP extends OpMode
             rightBPower = 0;
         }
 
-        if (gamepad2.y) {
+        if (gamepad1.y) {
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.TRANSFER;
             frontElbowTarget = bronto.frontElbowTransPos;
@@ -163,7 +168,16 @@ public class BrontoTeleOP extends OpMode
             backElbowTarget = bronto.backElbowHighPos;
             frontArmTarget = bronto.frontArmIntakePos;
             backArmTarget = bronto.backArmHighPos;
-        } else if (gamepad1.a) {
+        } else if (gamepad1.a && gamepad1.y) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.RESTING;
+            frontElbowTarget = bronto.frontElbowRestPos;
+            backElbowTarget = bronto.backElbowRestPos;
+            frontArmTarget = bronto.frontArmRestPos;
+            backArmTarget = bronto.backArmRestPos;
+        }
+
+        /* else if (gamepad1.a) {
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.DELIVERING;
             frontElbowTarget = bronto.frontElbowIntakePos;
@@ -171,6 +185,7 @@ public class BrontoTeleOP extends OpMode
             frontArmTarget = bronto.frontArmIntakePos;
             backArmTarget = bronto.backArmLowPos;
         }
+        */
 
         //setting next state
         switch (state) {
@@ -181,15 +196,18 @@ public class BrontoTeleOP extends OpMode
             case DELIVERING:
                 telemetry.addData("Arm State", "High Pole");
 
-                telemetry.addData("Distances Array", distances);
+                telemetry.addData("Distances Array 0", distances[0]);
+                telemetry.addData("Distances Array 1", distances[1]);
+                telemetry.addData("Distances Array 2", distances[2]);
                 //really stupid way to do a running average but i dont care have fun!
+                //also TODO: make this a method or class
                 double distAvg = bronto.backHighDist;
                 if (distances[2] != 0) {
-                    distances [2] = distances [1];
+                    distances [2] = distances [1]; //pushback old values
                     distances [1] = distances [0];
-                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
                     distAvg = (distances[0] + distances[1] + distances[2]) / 3;
-                } else if (distances[0] == 0) {
+                } else if (distances[0] == 0) { //dummy easy way to add values at beginning
                     distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
                 } else if (distances[1] == 0) {
                     distances [1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
@@ -212,7 +230,6 @@ public class BrontoTeleOP extends OpMode
                         /*
                         basically this should add to the target some small value once it is intaking to fine tune its
                         distance from the ground
-                        TODO: check if should be -= and adjust target
                          */
                 frontElbowTarget -= bronto.moveByDistance(bronto.frontDistanceSensor, bronto.frontIntakeDist);
                 intakePow = -1;
@@ -225,8 +242,8 @@ public class BrontoTeleOP extends OpMode
                 break;
             case MOVING:
                 telemetry.addData("Arm State", "Moving");
-                if (bronto.frontElbowComponent.closeEnough (frontElbowTarget, 10) &&
-                        bronto.backElbowComponent.closeEnough (backElbowTarget, 10) &&
+                if (bronto.frontElbowComponent.closeEnough (frontElbowTarget, 20) &&
+                        bronto.backElbowComponent.closeEnough (backElbowTarget, 20) &&
                         bronto.frontArmComponent.closeEnough(frontArmTarget, 50) &&
                         bronto.backArmComponent.closeEnough (backArmTarget, 50)) { //putting range high because it will keep moving
                     state = nextState;
@@ -247,8 +264,8 @@ public class BrontoTeleOP extends OpMode
                     intakePow = 1;}
 
                  */
-                intakePow = 1;
-                outakePow = 1;
+                intakePow = -1;
+                outakePow = -1;
                 if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown"){
                     intakePow = 0;
                     state = TeleOpStates.UNKNOWN;
@@ -263,7 +280,6 @@ public class BrontoTeleOP extends OpMode
                 telemetry.addData("Arm Position", "Unknown");
 
         }
-
 
         bronto.leftFront.setPower(leftFPower);
         bronto.leftRear.setPower(leftBPower);
@@ -280,27 +296,34 @@ public class BrontoTeleOP extends OpMode
         button is pressed when state is not resting, this might be really bad but idk
         TODO: TEST THIS CRAP
          */
-
-
-        if (bronto.frontArmComponent.closeEnough(frontArmTarget, 20) ||
-                (bronto.frontButton.isPressed() && state != TeleOpStates.RESTING)) {
+        if ((bronto.frontArmComponent.closeEnough(frontArmTarget, 20)) ||
+                (bronto.frontButton.isPressed() && state != TeleOpStates.MOVING)) {
             bronto.frontArm.setPower(0);
         } else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
-        if (bronto.backArmComponent.closeEnough(backArmTarget, 20) ||
-                bronto.backButton.isPressed() && state != TeleOpStates.RESTING) {
+        if ((bronto.backArmComponent.closeEnough(backArmTarget, 20)) ||
+                (bronto.backButton.isPressed() && state != TeleOpStates.MOVING)) {
             bronto.backArm.setPower(0);
         } else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
         bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
         bronto.backElbowComponent.moveUsingPID(backElbowTarget);
 
+        telemetry.addLine();
+        telemetry.addData("frontArm Target", frontArmTarget);
         telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
         telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("frontElbow Target", frontElbowTarget);
         telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
         telemetry.addData("frontElbow Pwr", bronto.frontElbow.getPower());
+        telemetry.addLine();
+        telemetry.addData("backArm Target", backArmTarget);
         telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
         telemetry.addData("backArm Pwr", bronto.backArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("backElbow Target", backElbowTarget);
         telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
         telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
+        telemetry.addLine();
         telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
         //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());

@@ -82,12 +82,13 @@ public class HWC {
 
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
     //BS numbers but I needed something
-    int armRestingPos = 0;
+    int frontArmRestPos = 0;
     int frontArmIntakePos = 0; //changed to 0
     int frontArmLowPos = -2560;
     int frontArmMedPos = -4079;
     int frontArmHighPos = 4942;
     int frontArmTransPos = frontArmHighPos;
+
     int frontElbowRestPos = 0;
     int frontElbowIntakePos = -204;
     int frontElbowTransPos =  524;
@@ -95,12 +96,14 @@ public class HWC {
     int frontElbowMedPos = 1254;
     int frontElbowHighPos = 686;
 
+
     int backArmRestPos = 0;
     int backArmIntakePos = -1325;
     int backArmLowPos = -3646;
     int backArmMedPos = -4838;
     int backArmHighPos = -5683;
     int backArmTransPos = backArmHighPos; //same
+
     int backElbowRestPos = 0;
     int backElbowIntakePos = 319;
     int backElbowTransPos = -417;
@@ -135,9 +138,9 @@ public class HWC {
         backElbow = hardwareMap.get(DcMotorEx.class, "backElbow");
 
         //declare all arm components with PID values, 435rpm motors have 384.5 ppr, 60rpm has 2786.2 ppr multiplied by gear ratio
-        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.02, 0.15, 0.0005, 0.05);
-        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.02, 0.25, 0.0005, 0.05);
-        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.04, 0.4, 0.0005, 0);
+        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.01, 0.15, 0.0005, 0.05);
+        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.01, 0.25, 0.0005, 0.05);
+        frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.01, 0.0, 0.0000, 0);
         backArmComponent = new RobotComponents (backArm, 384.5 * 28, 0.01, .5, 0.0003, 0);
 
         // Declare servos
@@ -160,10 +163,10 @@ public class HWC {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
 
         // Set the direction of all our motors
-        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
-        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         /*
         frontArm.setDirection(DcMotorEx.Direction.FORWARD);
@@ -207,9 +210,9 @@ public class HWC {
     //all this does is check how far off it is from a target then returns an int to adjust encoder target
     public int moveByDistance (DistanceSensor sensor, int target) {
         if ((int) sensor.getDistance(DistanceUnit.CM) - target < 0) {
-            return 5;
+            return 1;
         } else if ((int) sensor.getDistance(DistanceUnit.CM) - target > 0) {
-            return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+            return -1; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
         }
         return 0;
     }

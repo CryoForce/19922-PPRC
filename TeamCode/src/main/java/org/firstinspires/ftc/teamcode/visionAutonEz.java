@@ -70,17 +70,20 @@ public class visionAutonEz extends LinearOpMode {
       //  bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.frontElbow.getCurrentPosition());
         //bronto.move_to_position_and_hold(bronto.backElbow, 0.5, bronto.backElbow.getCurrentPosition());
         sleep(12000);
-        bronto.backElbow.setDirection(DcMotor.Direction.REVERSE);
-        bronto.frontElbow.setDirection(DcMotor.Direction.FORWARD);
+        bronto.frontElbow.setTargetPosition(400);
+        bronto.backElbow.setTargetPosition(-400);
+        bronto.frontElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bronto.backElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bronto.backElbow.setDirection(DcMotorSimple.Direction.REVERSE);
+        bronto.frontElbow.setDirection(DcMotorSimple.Direction.REVERSE);
         bronto.frontElbow.setPower(0.15);
         bronto.backElbow.setPower(0.15);
         sleep(1000);
         bronto.frontElbow.setPower(0.5);
-        bronto.backElbow.setPower(0.05);
-        bronto.backElbow.setTargetPosition(400);
-        bronto.backElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bronto.frontElbow.setTargetPosition(400);
-        bronto.frontElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bronto.backElbow.setPower(0.5);
+
+
+
 
 
 
