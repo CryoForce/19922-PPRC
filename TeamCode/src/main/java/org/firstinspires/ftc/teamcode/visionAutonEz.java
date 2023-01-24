@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -36,7 +37,7 @@ public class visionAutonEz extends LinearOpMode {
         bronto.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
         bronto.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
         bronto.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        bronto.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         bronto.frontElbow.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         bronto.backElbow.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
@@ -69,10 +70,12 @@ public class visionAutonEz extends LinearOpMode {
       //  bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.frontElbow.getCurrentPosition());
         //bronto.move_to_position_and_hold(bronto.backElbow, 0.5, bronto.backElbow.getCurrentPosition());
         sleep(12000);
-        bronto.frontElbow.setPower(-0.15);
+        bronto.backElbow.setDirection(DcMotor.Direction.REVERSE);
+        bronto.frontElbow.setDirection(DcMotor.Direction.FORWARD);
+        bronto.frontElbow.setPower(0.15);
         bronto.backElbow.setPower(0.15);
         sleep(1000);
-        bronto.frontElbow.setPower(-0.5);
+        bronto.frontElbow.setPower(0.5);
         bronto.backElbow.setPower(0.05);
         bronto.backElbow.setTargetPosition(400);
         bronto.backElbow.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -111,7 +114,7 @@ public class visionAutonEz extends LinearOpMode {
             bronto.leftRear.setPower(0.5);
             bronto.rightFront.setPower(0.5);
             bronto.rightRear.setPower(0.5);
-            sleep(1500);
+            sleep(2500);
             bronto.leftFront.setPower(0);
             bronto.leftRear.setPower(0);
             bronto.rightFront.setPower(0);
@@ -126,7 +129,7 @@ public class visionAutonEz extends LinearOpMode {
             bronto.leftRear.setPower(0.5);
             bronto.rightFront.setPower(0.5);
             bronto.rightRear.setPower(0.5);
-            sleep(1500);
+            sleep(2500);
             bronto.leftFront.setPower(0);
             bronto.leftRear.setPower(0);
             bronto.rightFront.setPower(0);
