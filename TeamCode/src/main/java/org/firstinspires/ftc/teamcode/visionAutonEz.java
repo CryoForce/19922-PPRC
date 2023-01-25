@@ -62,13 +62,7 @@ public class visionAutonEz extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-       /* bronto.frontArm.setPower(1);
-        bronto.backArm.setPower(1);
-        sleep(500);
-        bronto.frontArm.setPower(0);
-        bronto.backArm.setPower(0);*/
-      //  bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.frontElbow.getCurrentPosition());
-        //bronto.move_to_position_and_hold(bronto.backElbow, 0.5, bronto.backElbow.getCurrentPosition());
+
         sleep(12000);
         bronto.frontElbow.setTargetPosition(400);
         bronto.backElbow.setTargetPosition(-400);
