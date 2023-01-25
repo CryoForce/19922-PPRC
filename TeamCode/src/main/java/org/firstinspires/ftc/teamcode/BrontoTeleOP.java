@@ -347,6 +347,17 @@ public class BrontoTeleOP extends OpMode
         bronto.backIntakeL.setPower(outakePow);
         bronto.backIntakeR.setPower(outakePow);
 
+        if (frontArmTarget > 5500) {
+            frontArmTarget = 5500;
+        } else if (frontArmTarget < 0) {
+            frontArmTarget = 0;
+        }
+        if (backArmTarget < -6200) {
+            frontArmTarget = -6200;
+        } else if (frontArmTarget > 0) {
+            frontArmTarget = 0;
+        }
+
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (frontArmIsClose) {bronto.frontArm.setPower(0);}
         else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
