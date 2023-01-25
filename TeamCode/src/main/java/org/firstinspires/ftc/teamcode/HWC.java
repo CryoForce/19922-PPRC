@@ -210,9 +210,9 @@ public class HWC {
     //all this does is check how far off it is from a target then returns an int to adjust encoder target
     public int moveByDistance (DistanceSensor sensor, int target) {
         if ((int) sensor.getDistance(DistanceUnit.CM) - target < 0) {
-            return 1;
+            return 5;
         } else if ((int) sensor.getDistance(DistanceUnit.CM) - target > 0) {
-            return -1; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+            return -5;
         }
         return 0;
     }
@@ -221,9 +221,14 @@ public class HWC {
         if ((int) dist - target < 0) {
             return 5;
         } else if ((int) dist - target > 0) {
-            return -5; //TODO: these negatives are random and should be checked (they dont really matter tho cuz each motor will be diff)
+            return -5;
         }
         return 0;
+    }
+
+    public boolean closeEnough (int pos, int target, int range) {
+        if ((target - range <= pos) && (target + range >= pos)) return true;
+        return false;
     }
 
     // Function to run intake set of servos to intake a cone/transfer to other arm

@@ -36,7 +36,7 @@ public class RobotComponents {
 
     }
 
-    public boolean closeEnough (int target, int range) {
+    public boolean motorCloseEnough(int target, int range) {
         if ((target - range <= motor.getCurrentPosition()) && (target + range >= motor.getCurrentPosition())) return true;
         return false;
     }
