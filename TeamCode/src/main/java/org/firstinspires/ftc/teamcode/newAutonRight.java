@@ -2,13 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class newAutonRight extends LinearOpMode {
-    // Variables
-    HWC.autonStates state = HWC.autonStates.SCANNING_FOR_SIGNAL;
-    HWC.armPositions armPosition = HWC.armPositions.RESTING;
-    ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,7 +25,7 @@ public class newAutonRight extends LinearOpMode {
             telemetry.addData("ROTATION: ", bronto.sleeveDetection.getPosition());
             telemetry.update();
 
-            int parkingZone = bronto.sleeveDetection.getPosition();
+            bronto.parkingZone = bronto.sleeveDetection.getPosition();
         }
 
         waitForStart();
@@ -42,5 +37,23 @@ public class newAutonRight extends LinearOpMode {
         Pose2d newPos = TC.RIGHT_deliverPreloadLeft(bronto.drive, bronto.START_POS_RIGHT).end();
         bronto.drive.followTrajectory(TC.RIGHT_deliverPreloadForward(bronto.drive, newPos));
         newPos = TC.RIGHT_deliverPreloadForward(bronto.drive, newPos).end();
+
+        // TODO: ADD ARM MOVEMENTS
+
+        bronto.drive.followTrajectory(TC.RIGHT_forwardToPark(bronto.drive, newPos));
+        newPos = TC.RIGHT_forwardToPark(bronto.drive, newPos).end();
+        if(bronto.parkingZone == 1) {
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
+        } else if(bronto.parkingZone == 2) {
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone2(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone2(bronto.drive, newPos).end();
+        } else if(bronto.parkingZone == 3) {
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone3(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone3(bronto.drive, newPos).end();
+        } else {
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
+        }
     }
 }
