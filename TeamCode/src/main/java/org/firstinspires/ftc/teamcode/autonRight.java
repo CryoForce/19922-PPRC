@@ -60,12 +60,12 @@ public class autonRight extends LinearOpMode {
         case MOVING_TO_POLE:
           if (bronto.cycleCount < 1) {
             // Set target positions for arm components
-            frontArmTarget = bronto.intakePos;
-            frontElbowTarget = bronto.elbowIntakePos;
-            backArmTarget = bronto.backHighPolePos;
-            backElbowTarget = bronto.backElbowDeliveryPosHigh;
+            frontArmTarget = bronto.frontArmIntakePos;
+            frontElbowTarget = bronto.frontElbowIntakePos;
+            backArmTarget = bronto.backArmHighPos;
+            backElbowTarget = bronto.backElbowHighPos;
 
-            while (!bronto.closeEnough(bronto.frontArm.getCurrentPosition(), frontArmTarget, 5)
+            /*while (!bronto.closeEnough(bronto.frontArm.getCurrentPosition(), frontArmTarget, 5)
                     && !bronto.closeEnough(bronto.frontElbow.getCurrentPosition(), frontElbowTarget, 2)
                     && !bronto.closeEnough(bronto.backArm.getCurrentPosition(), backArmTarget, 5)
                     && !bronto.closeEnough(bronto.backElbow.getCurrentPosition(), backElbowTarget, 2)) {
@@ -73,6 +73,7 @@ public class autonRight extends LinearOpMode {
               bronto.backArmComponent.moveUsingPID(backArmTarget);
               bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
               bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+
             }
 
             frontArmPosition = HWC.armPositions.HIGH_POLE;
@@ -88,11 +89,13 @@ public class autonRight extends LinearOpMode {
 
           } else {
             // Move arms to transfer position
-            frontArmTarget = bronto.transferPos;
-            frontElbowTarget = bronto.elbowTransferPos;
-            backArmTarget = bronto.backHighPolePos;
-            backElbowTarget = bronto.backElbowTransferPos;
+            frontArmTarget = bronto.frontArmTransPos;
+            frontElbowTarget = bronto.frontElbowTransPos;
+            backArmTarget = bronto.backArmHighPos;
+            backElbowTarget = bronto.backElbowTransPos;
 
+             */
+/*
             while (!bronto.closeEnough(bronto.frontArm.getCurrentPosition(), frontArmTarget, 5)
                     && !bronto.closeEnough(bronto.frontElbow.getCurrentPosition(), frontElbowTarget, 2)
                     && !bronto.closeEnough(bronto.backArm.getCurrentPosition(), backArmTarget, 5)
@@ -103,6 +106,8 @@ public class autonRight extends LinearOpMode {
                 bronto.backElbowComponent.moveUsingPID(backElbowTarget);
             }
 
+
+ */
             // Run servos to transfer cone
             // TODO: Check power values for directionality
             bronto.runIntakeServo('R', -.3);
@@ -112,11 +117,11 @@ public class autonRight extends LinearOpMode {
             bronto.runIntakeServo('F', 0);
 
             // Move arms to delivery/intake pos
-            frontArmTarget = bronto.intakePos;
-            frontElbowTarget = bronto.elbowIntakePos;
-            backArmTarget = bronto.backHighPolePos;
-            backElbowTarget = bronto.backElbowDeliveryPosHigh;
-
+            frontArmTarget = bronto.frontArmIntakePos;
+            frontElbowTarget = bronto.frontElbowIntakePos;
+            backArmTarget = bronto.backArmHighPos;
+            backElbowTarget = bronto.backElbowHighPos;
+/*
             while (!bronto.closeEnough(bronto.frontArm.getCurrentPosition(), frontArmTarget, 5)
                     && !bronto.closeEnough(bronto.frontElbow.getCurrentPosition(), frontElbowTarget, 2)
                     && !bronto.closeEnough(bronto.backArm.getCurrentPosition(), backArmTarget, 5)
@@ -127,6 +132,8 @@ public class autonRight extends LinearOpMode {
                 bronto.backElbowComponent.moveUsingPID(backElbowTarget);
             }
 
+
+ */
             // Run stack to pole trajectory
             bronto.drive.followTrajectory(TC.RIGHT_stackToPole(bronto.drive, TC.RIGHT_poleToStack(bronto.drive, TC.RIGHT_startToCyclePole(bronto.drive, bronto.START_POS_RIGHT).end().plus(new Pose2d(0, 0, Math.toRadians(90)))).end()));
           }
