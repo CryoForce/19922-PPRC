@@ -99,11 +99,11 @@ public class BrontoTeleOPCoords extends OpMode
         //manual intake/outake control
         //changed to gamepad2 bumpers b/c unused rn
         if (gamepad2.right_trigger != 0) { outakePow = gamepad2.right_trigger;}
-        else if (gamepad2.right_bumper == true) {outakePow = -1;}
+        else if (gamepad2.right_bumper) {outakePow = -1;}
         else {outakePow = 0;}
 
         if (gamepad2.left_trigger != 0) { intakePow = gamepad2.left_trigger;}
-        else if (gamepad2.left_bumper == true) {intakePow = -1;}
+        else if (gamepad2.left_bumper) {intakePow = -1;}
         else {intakePow = 0;}
 
         /*
