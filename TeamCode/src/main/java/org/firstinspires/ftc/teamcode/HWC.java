@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -118,6 +119,9 @@ public class HWC {
     int frontIntakeDist = 10;
     int frontTransferDist;
     int backTransferDist;
+
+    int testingDistance = 100;
+    double testingButtonValue = 0.9;
 
     public RobotComponents frontArmComponent;
     public RobotComponents backArmComponent;
@@ -245,7 +249,6 @@ public class HWC {
             backIntakeR.setPower(-power);
         }
     }
-
     public String returnColor(ColorSensor CS) {
         int red = CS.red();
         int green = CS.green();
@@ -269,6 +272,16 @@ public class HWC {
         while (time.milliseconds() > milliseconds){}
         return true;
 
+    }
+
+    public int fixEncoderPos(DistanceSensor distance,TouchSensor button, int prevPos){
+        if (distance.getDistance(DistanceUnit.CM) > testingDistance + 2 && button.getValue() != testingButtonValue){
+return -10;
+        }
+        if (distance.getDistance(DistanceUnit.CM) < testingDistance - 2 && button.getValue() != testingButtonValue){
+            return 10;
+        }
+        return 0;
     }
 
     // Function used to move any motor to different positions and hold it.
@@ -321,39 +334,7 @@ public class HWC {
         rightRear.setPower(0);
     }
 
-    /*public void smartMove(armPositions pos){
-        switch (pos){
-            case INTAKE:
-                move_to_position_and_hold(frontArm,1, intakePos);
-                move_to_position_and_hold(frontElbow, 0.5 , elbowIntakePos);
-                break;
-            case RESTING:
-                move_to_position_and_hold(frontArm,1, armRestingPos);
-                move_to_position_and_hold(frontElbow,0.5, elbowRestingPos);
-                break;
-            case LOW_POLE:
-                move_to_position_and_hold(frontArm,1, lowPolePos);
-                move_to_position_and_hold(frontElbow,0.5, elbowDeliveryPosLow);
-                break;
-            case MED_POLE:
-                move_to_position_and_hold(frontArm,1, medPolePos);
-                move_to_position_and_hold(frontElbow,1, elbowTransferPos);
-                break;
-            case HIGH_POLE:
-                move_to_position_and_hold(frontArm,1, highPolePos);
-                move_to_position_and_hold(frontElbow,1, elbowTransferPos);
-                if (frontArm.getCurrentPosition() == highPolePos) move_to_position_and_hold(frontElbow, 0.5, elbowDeliveryPosHigh);
-                break;
-            case TRANSFER:
-                move_to_position_and_hold(frontElbow,1, elbowTransferPos);
-                move_to_position_and_hold(frontArm,1, intakePos);
-                break;
-            default:
-                telemetry.addData("HELP!", "This isnt possible");
-                telemetry.update();
-        }
-    }
-*/
+
     public void turn(double directionInDegrees, double wheelVelocity) {
 //      384.5(PPR) = ~50cm = ~20in
 //      7.9(PPR) = 1cm
