@@ -383,7 +383,7 @@ public class BrontoTeleOP extends OpMode
             frontArmTarget = 0;
         }
         if (backArmTarget < -6200) {
-            frontArmTarget = -6200;
+            backArmTarget = -6200;
         } else if (frontArmTarget > 0) {
             frontArmTarget = 0;
         }
