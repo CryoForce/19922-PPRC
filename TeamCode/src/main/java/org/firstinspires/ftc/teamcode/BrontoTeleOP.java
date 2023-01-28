@@ -384,8 +384,8 @@ public class BrontoTeleOP extends OpMode
         }
         if (backArmTarget < -6200) {
             backArmTarget = -6200;
-        } else if (frontArmTarget > 0) {
-            frontArmTarget = 0;
+        } else if (backArmTarget > 0) {
+            backArmTarget = 0;
         }
 
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
