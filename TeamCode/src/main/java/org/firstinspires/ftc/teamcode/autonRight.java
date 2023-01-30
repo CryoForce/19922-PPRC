@@ -37,6 +37,7 @@ public class autonRight extends LinearOpMode {
         waitForStart();
         // Set Starting Position Estimate for RoadRunner
         bronto.drive.setPoseEstimate(bronto.START_POS_RIGHT);
+
         // Update Telemetry
         telemetry.addData("Status", "Running");
         telemetry.update();
