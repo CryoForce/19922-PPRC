@@ -261,8 +261,8 @@ public class BrontoTeleOP extends OpMode
                 //checks if front/back arm are close enough and if distance is close enough
                 if (backArmIsClose && bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
                     outakePow = -1;
-                    if (bronto.returnColor(bronto.backIntakeSensor) == "unknown") {
-                        outakePow = 0;
+                        if (bronto.returnColor(bronto.backIntakeSensor) == "unknown") {
+                            outakePow = 0;
                         state = TeleOpStates.UNKNOWN;
                     }
                 }
