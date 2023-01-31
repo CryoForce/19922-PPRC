@@ -305,6 +305,8 @@ public class BrontoTeleOP extends OpMode
                     frontArmMoving = true;
                     backArmMoving = true;
                 }
+                else { frontArmMoving = false;
+                    backArmMoving = false;}
                 if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
                         bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20) &&
                         bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
@@ -376,9 +378,9 @@ public class BrontoTeleOP extends OpMode
         bronto.frontIntakeR.setPower(intakePow);
         bronto.backIntakeL.setPower(outakePow);
         bronto.backIntakeR.setPower(outakePow);
-
-        if (frontArmTarget > 5500) {
-            frontArmTarget = 5500;
+/*
+        if (frontArmTarget > 5300) {
+            frontArmTarget = 5300;
         } else if (frontArmTarget < 0) {
             frontArmTarget = 0;
         }
@@ -387,7 +389,7 @@ public class BrontoTeleOP extends OpMode
         } else if (frontArmTarget > 0) {
             frontArmTarget = 0;
         }
-
+*/
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (frontArmIsClose) {bronto.frontArm.setPower(0);}
         else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
@@ -400,8 +402,6 @@ public class BrontoTeleOP extends OpMode
         else {bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
 
 
-        bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
-        bronto.backElbowComponent.moveUsingPID(backElbowTarget);
 
         telemetry.addLine();
         telemetry.addData("frontArm Target", frontArmTarget);
