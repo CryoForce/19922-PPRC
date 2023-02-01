@@ -34,19 +34,20 @@ public class asyncAutonTesting extends LinearOpMode {
 
         // Set Starting Position Estimate for RoadRunner
         bronto.drive.setPoseEstimate(bronto.START_POS_LEFT);
+        Pose2d newPos = bronto.START_POS_LEFT;
 
         // Update Telemetry
         telemetry.addData("Status", "Running");
         telemetry.update();
 
         // ------------------- FORWARD TO OPEN ARMS ------------------- //
-        bronto.drive.followTrajectoryAsync(TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT));
-        Pose2d newPos = TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT).end();
-
-        bronto.drive.update();
-        while(bronto.drive.isBusy()) {
-            bronto.drive.update();
-        }
+//        bronto.drive.followTrajectoryAsync(TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT));
+//        Pose2d newPos = TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT).end();
+//
+//        bronto.drive.update();
+//        while(bronto.drive.isBusy()) {
+//            bronto.drive.update();
+//        }
 
         // ------------------- STRAFE RIGHT ------------------- //
         bronto.drive.followTrajectoryAsync(TC.LEFT_deliverPreloadRight(bronto.drive, newPos));
@@ -89,6 +90,15 @@ public class asyncAutonTesting extends LinearOpMode {
             bronto.drive.followTrajectory(TC.LEFT_parkingZone1(bronto.drive, newPos));
             newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
         }
+
+        bronto.drive.update();
+        while(bronto.drive.isBusy()) {
+            bronto.drive.update();
+        }
+
+        // ------------------- FORWARD AFTER PARKING ------------------- //
+        bronto.drive.followTrajectoryAsync(TC.forward(bronto.drive, newPos, 7));
+        newPos = TC.forward(bronto.drive, newPos, 7).end();
 
         bronto.drive.update();
         while(bronto.drive.isBusy()) {
