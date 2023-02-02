@@ -36,6 +36,7 @@ public class BrontoTeleOP extends OpMode
     int backArmTarget = 0;
     int frontElbowTarget = 0;
     int backElbowTarget = 0;
+    int autoCycle = -1;
 
     double [] distances = new double [3];
 
@@ -105,8 +106,53 @@ public class BrontoTeleOP extends OpMode
         if (gamepad1.left_bumper && gamepad1.right_bumper && gamepad1.left_stick_button){
             bronto.frontArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
 
-        //manual intake/outake control
-        //changed to gamepad2 bumpers b/c unused rn
+        //force exit cycle
+        if (gamepad1.dpad_right && gamepad1.dpad_left){
+            autoCycle = -1;
+            telemetry.addData("Cycle Status", "CANCELED!");
+        }
+        if (gamepad1.dpad_down){
+            autoCycle = 3;
+        }
+        if (gamepad1.dpad_up){
+            autoCycle--;
+        }
+
+        switch (autoCycle) {
+            case 3: // Moves to intake
+                //code to move back to driving intake pos
+                nextState = TeleOpStates.INTAKE;
+                frontElbowTarget = bronto.frontElbowIntakePos;
+                backElbowTarget = bronto.backElbowHighPos;
+                frontArmTarget = bronto.frontArmIntakePos;
+                backArmTarget = bronto.backArmHighPos;
+                state = TeleOpStates.MOVING;
+                break;
+            case 2: // moves to transfer
+                nextState = TeleOpStates.TRANSFER;
+                frontElbowTarget = bronto.frontElbowTransPos;
+                backElbowTarget = bronto.backElbowTransPos;
+                frontArmTarget = bronto.frontArmTransPos;
+                backArmTarget = bronto.backArmHighPos;
+                state = TeleOpStates.MOVING;
+                break;
+            case 1: // moves to delivery
+                //code to drive to delivery pos
+                nextState = TeleOpStates.DELIVERING;
+                frontElbowTarget = bronto.frontElbowIntakePos;
+                backElbowTarget = bronto.backElbowHighPos;
+                frontArmTarget = bronto.frontArmIntakePos;
+                backArmTarget = bronto.backArmHighPos;
+                state = TeleOpStates.MOVING;
+                break;
+            case 0:
+                autoCycle = 3;
+                break;
+            default:
+                break;
+
+        }
+
         if (gamepad2.right_trigger != 0) { outakePow = gamepad2.right_trigger;}
         else if (gamepad2.right_bumper == true) {outakePow = -1;}
         else {outakePow = 0;}
@@ -154,6 +200,7 @@ public class BrontoTeleOP extends OpMode
         }
 
         if (gamepad1.a && gamepad1.y) {
+            autoCycle = -1;
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.RESTING;
             frontElbowTarget = bronto.frontElbowRestPos;
@@ -161,9 +208,11 @@ public class BrontoTeleOP extends OpMode
             frontArmTarget = bronto.frontArmRestPos;
             backArmTarget = bronto.backArmRestPos;
         } else if (gamepad1.a && gamepad1.x) {
+            autoCycle = -1;
             state = TeleOpStates.MOVING;
 
         } else if (gamepad1.y) {
+            autoCycle = -1;
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.TRANSFER;
             frontElbowTarget = bronto.frontElbowTransPos;
@@ -171,6 +220,7 @@ public class BrontoTeleOP extends OpMode
             frontArmTarget = bronto.frontArmTransPos;
             backArmTarget = bronto.backArmHighPos;
         } else if (gamepad1.x) {
+            autoCycle = -1;
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.DELIVERING;
             frontElbowTarget = bronto.frontElbowIntakePos;
@@ -178,6 +228,7 @@ public class BrontoTeleOP extends OpMode
             frontArmTarget = bronto.frontArmIntakePos;
             backArmTarget = bronto.backArmHighPos;
         } else if (gamepad1.b) { //changing from medium pole to intake cuz apparently thats not here
+            autoCycle = -1;
             state = TeleOpStates.MOVING;
             nextState = TeleOpStates.INTAKE;
             frontElbowTarget = bronto.frontElbowIntakePos;
@@ -261,8 +312,9 @@ public class BrontoTeleOP extends OpMode
                 //checks if front/back arm are close enough and if distance is close enough
                 if (backArmIsClose && bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
                     outakePow = -1;
-                    if (bronto.returnColor(bronto.backIntakeSensor) == "unknown") {
+                    if (bronto.returnColor(bronto.backIntakeSensor) == "unknown" && bronto.backIntakeL.getPower() !=0 || bronto.backIntakeR.getPower() !=0) {
                         outakePow = 0;
+                        autoCycle--;
                         state = TeleOpStates.UNKNOWN;
                     }
                 }
@@ -277,8 +329,9 @@ public class BrontoTeleOP extends OpMode
                 frontElbowTarget -= bronto.moveByDistance(bronto.frontDistanceSensor, bronto.frontIntakeDist);
                 intakePow = -1;
                 telemetry.addData ("Front Color: ", bronto.returnColor(bronto.frontIntakeSensor));
-                if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown"){
+                if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown" && bronto.frontIntakeL.getPower() != 0 || bronto.frontIntakeR.getPower() != 0){
                     intakePow = 0;
+                    autoCycle--;
                     state = TeleOpStates.UNKNOWN;
                 }
 
@@ -294,8 +347,8 @@ public class BrontoTeleOP extends OpMode
             case MOVING:
                 telemetry.addData("Arm State", "Moving");
                 if (nextState == TeleOpStates.DELIVERING){
-                frontArmMoving = true;
-                backArmMoving = true;
+                    frontArmMoving = true;
+                    backArmMoving = true;
                 }
                 else if (nextState == TeleOpStates.TRANSFER){
                     frontArmMoving = true;
@@ -305,8 +358,6 @@ public class BrontoTeleOP extends OpMode
                     frontArmMoving = true;
                     backArmMoving = true;
                 }
-                else { frontArmMoving = false;
-                    backArmMoving = false;}
                 if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
                         bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20) &&
                         bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
@@ -327,7 +378,6 @@ public class BrontoTeleOP extends OpMode
                 //commenting out until transfer sensor is connected
                 if (bronto.returnColor(bronto.transferSensor) != "unknown"){
                     intakePow = 1;}
-
                  */
 
                 //if motor close enough but button not pressed increment both arms
@@ -346,8 +396,9 @@ public class BrontoTeleOP extends OpMode
                 if (frontArmIsClose && backArmIsClose) {
                     intakePow = -1;
                     outakePow = -1;
-                    if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown"){
+                    if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown" && bronto.frontIntakeL.getPower() != 0){
                         intakePow = 0;
+                        autoCycle--;
                         state = TeleOpStates.UNKNOWN;
                     }
                 }
@@ -378,18 +429,18 @@ public class BrontoTeleOP extends OpMode
         bronto.frontIntakeR.setPower(intakePow);
         bronto.backIntakeL.setPower(outakePow);
         bronto.backIntakeR.setPower(outakePow);
-/*
-        if (frontArmTarget > 5300) {
-            frontArmTarget = 5300;
+
+        if (frontArmTarget > 5500) {
+            frontArmTarget = 5500;
         } else if (frontArmTarget < 0) {
             frontArmTarget = 0;
         }
         if (backArmTarget < -6200) {
-            frontArmTarget = -6200;
-        } else if (frontArmTarget > 0) {
-            frontArmTarget = 0;
+            backArmTarget = -6200;
+        } else if (backArmTarget > 0) {
+            backArmTarget = 0;
         }
-*/
+
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (frontArmIsClose) {bronto.frontArm.setPower(0);}
         else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
@@ -401,7 +452,8 @@ public class BrontoTeleOP extends OpMode
         if (backArmMoving) {bronto.backArm.setPower(0);}
         else {bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
 
-
+        bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+        bronto.backElbowComponent.moveUsingPID(backElbowTarget);
 
         telemetry.addLine();
         telemetry.addData("frontArm Target", frontArmTarget);
@@ -422,6 +474,8 @@ public class BrontoTeleOP extends OpMode
         telemetry.addLine();
         telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addLine();
+        telemetry.addData("Auto Cycle", autoCycle);
         //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
         // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
         telemetry.update();

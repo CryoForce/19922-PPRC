@@ -267,11 +267,10 @@ public class HWC {
         return color;
     }
 
-    public boolean betterSleep(int milliseconds){
+    public void betterSleep(int milliseconds){
         time.reset();
         while (time.milliseconds() > milliseconds){}
-        return true;
-
+        telemetry.addData("slept for ", milliseconds);
     }
 
     public int fixEncoderPos(DistanceSensor distance,TouchSensor button, int prevPos){
