@@ -90,7 +90,7 @@ public class BrontoTeleOP extends OpMode
         double leftBPower ;
         double rightBPower;
         double intakePow = 0;
-        double outakePow = 0;
+        double outtakePow = 0;
 
         boolean frontArmIsClose = false;
         boolean backArmIsClose = false;
@@ -152,9 +152,9 @@ public class BrontoTeleOP extends OpMode
 
         }
 
-        if (gamepad2.right_trigger != 0) { outakePow = gamepad2.right_trigger;}
-        else if (gamepad2.right_bumper == true) {outakePow = -1;}
-        else {outakePow = 0;}
+        if (gamepad2.right_trigger != 0) { outtakePow = gamepad2.right_trigger;}
+        else if (gamepad2.right_bumper == true) {outtakePow = -1;}
+        else {outtakePow = 0;}
 
         if (gamepad2.left_trigger != 0) { intakePow = gamepad2.left_trigger;}
         else if (gamepad2.left_bumper == true) {intakePow = -1;}
@@ -310,9 +310,9 @@ public class BrontoTeleOP extends OpMode
 
                 //checks if front/back arm are close enough and if distance is close enough
                 if (backArmIsClose && bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
-                    outakePow = -1;
+                    outtakePow = -1;
                     if (bronto.returnColor(bronto.backIntakeSensor) == "unknown" && bronto.backIntakeL.getPower() !=0 || bronto.backIntakeR.getPower() !=0) {
-                        outakePow = 0;
+                        outtakePow = 0;
                         autoCycle--;
                         state = TeleOpStates.UNKNOWN;
                     }
@@ -394,7 +394,7 @@ public class BrontoTeleOP extends OpMode
                 //checks if front/back arm are close enough to begin transfer
                 if (frontArmIsClose && backArmIsClose) {
                     intakePow = -1;
-                    outakePow = -1;
+                    outtakePow = -1;
                     if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown" && bronto.frontIntakeL.getPower() != 0){
                         intakePow = 0;
                         autoCycle--;
@@ -426,8 +426,8 @@ public class BrontoTeleOP extends OpMode
         bronto.rightRear.setPower(rightBPower);
         bronto.frontIntakeL.setPower(intakePow);
         bronto.frontIntakeR.setPower(intakePow);
-        bronto.backIntakeL.setPower(outakePow);
-        bronto.backIntakeR.setPower(outakePow);
+        bronto.backIntakeL.setPower(outtakePow);
+        bronto.backIntakeR.setPower(outtakePow);
 
         if (frontArmTarget > 5500) {
             frontArmTarget = 5500;
