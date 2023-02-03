@@ -123,8 +123,8 @@ public class BrontoTeleOP extends OpMode
 
         switch (autoCycle) {
             case 3: // Moves to intake
-                bronto.drive.followTrajectory(TC.(bronto.drive, bronto.START_POS_TELEOP));
-                Pose2d newPos = TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
+                bronto.drive.followTrajectory(TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP));
+                Pose2d newPos2 = TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
                 nextState = TeleOpStates.INTAKE;
                 frontElbowTarget = bronto.frontElbowIntakePos;
                 backElbowTarget = bronto.backElbowHighPos;
@@ -367,13 +367,13 @@ public class BrontoTeleOP extends OpMode
                 }
                 if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
                         bronto.backArmComponent.motorCloseEnough(backArmTarget, 50)) { //putting range high because it will keep moving
-                    state = TeleOpState.ELBOW_MOVING;
+                    state = TeleOpStates.ELBOW_MOVING;
                     nextState = TeleOpStates.UNKNOWN;
                 }
 
                 break;
             case ELBOW_MOVING:
-                telemetry.addData("Arm State", "Elbows moving")
+                telemetry.addData("Arm State", "Elbows moving");
                 if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
                 bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)){
                     state = nextState;
