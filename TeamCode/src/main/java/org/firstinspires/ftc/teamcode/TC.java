@@ -69,4 +69,17 @@ public class TC {
                 .strafeLeft(59)
                 .build();
     }
+
+    public static Trajectory TeleOp_To_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .forward(11)
+                .build();
+
+    }
+    public static Trajectory TeleOp_From_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .back(11)
+                .build();
+
+    }
 }

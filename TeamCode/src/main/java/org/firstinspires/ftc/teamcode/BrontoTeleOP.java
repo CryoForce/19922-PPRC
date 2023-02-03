@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -68,6 +69,8 @@ public class BrontoTeleOP extends OpMode
 
         state = TeleOpStates.MOVING;
         nextState = TeleOpStates.UNKNOWN;
+
+        bronto.drive.setPoseEstimate(bronto.START_POS_TELEOP);
     }
 
 
@@ -136,6 +139,8 @@ public class BrontoTeleOP extends OpMode
                 state = TeleOpStates.MOVING;
                 break;
             case 1: // moves to delivery
+                bronto.drive.followTrajectory(TC.TeleOp_To_Pole(bronto.drive, bronto.START_POS_TELEOP));
+                Pose2d newPos = TC.TeleOp_To_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
                 //code to drive to delivery pos
                 nextState = TeleOpStates.DELIVERING;
                 frontElbowTarget = bronto.frontElbowIntakePos;
@@ -145,6 +150,7 @@ public class BrontoTeleOP extends OpMode
                 state = TeleOpStates.MOVING;
                 break;
             case 0:
+
                 autoCycle = 3;
                 break;
             default:
