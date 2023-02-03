@@ -1,23 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
-@Disabled
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+//@Disabled
 @TeleOp(name="Bronto's TeleOp", group="Iterative Opmode")
 
 public class BrontoTeleOP extends OpMode
 {
     /** Declare OpMode members. */
-   HWC bronto;
-   BrontoBrain brain;
+    HWC bronto;
+    BrontoBrain brain;
 
     public enum TeleOpStates {
         RESTING,
+        DRIVING,
         INTAKE,
         DELIVERING, //WIPED LOW,MED,HIGH POLE B/C NO DIFFERENCE SINCE NO SENSORS GET TRIPPED
         MOVING,
@@ -34,28 +37,36 @@ public class BrontoTeleOP extends OpMode
     int frontElbowTarget = 0;
     int backElbowTarget = 0;
 
+    double [] distances = new double [3];
+
     TeleOpStates state = TeleOpStates.RESTING;
     TeleOpStates nextState = TeleOpStates.UNKNOWN; //determines when a moving state completes and will go to
 
     @Override
     public void init() {
         bronto = new HWC(hardwareMap, telemetry);
-         brain = new BrontoBrain(bronto);
+        brain = new BrontoBrain(bronto);
         telemetry.addData("Status", "Initializing");
-        bronto.frontElbow.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        bronto.frontElbow.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         bronto.frontArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bronto.backElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bronto.backArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //bronto.frontElbow.setTargetPosition(0);
-     //   bronto.frontArm.setTargetPosition(0);
-       // bronto.backElbow.setTargetPosition(0);
-     //   bronto.backArm.setTargetPosition(0);
-     //   bronto.frontElbow.setPower(0.2);
-      //  bronto.frontArm.setPower(0.2);
-    //    bronto.backElbow.setPower(0.2);
-    //    bronto.backArm.setPower(0.2);
+        bronto.frontElbow.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        bronto.frontArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bronto.backElbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        bronto.backArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        bronto.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        bronto.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+
+        backArmTarget = bronto.backArmHighPos; //set back arm to back high pole immediately for power draw issues
 
         telemetry.addData("Status", "Initialized");
+
+        state = TeleOpStates.MOVING;
+        nextState = TeleOpStates.UNKNOWN;
     }
 
 
@@ -64,12 +75,10 @@ public class BrontoTeleOP extends OpMode
     @Override
     public void init_loop() {
     }
-
     /** Code to run ONCE when the driver hits PLAY. */
     @Override
     public void start(){
-    runtime.reset();
-   // backArmTarget = bronto.backHighPolePos; //set back arm to back high pole immediately for power draw issues
+        runtime.reset();
     }
 
     @Override
@@ -79,217 +88,346 @@ public class BrontoTeleOP extends OpMode
         double rightFPower;
         double leftBPower ;
         double rightBPower;
-        double frontArmPow;
         double intakePow = 0;
-        double frontElbowPow = 0;
+        double outakePow = 0;
+
+        boolean frontArmIsClose = false;
+        boolean backArmIsClose = false;
+        boolean frontArmMoving = false;
+        boolean backArmMoving = false;
 
         double drive = -gamepad1.left_stick_y *0.8;
         double turn  =  gamepad1.left_stick_x * 0.6;
         double strafe = -gamepad1.right_stick_x * 0.8;
-        //double frontArmUp = gamepad2.left_trigger;
-        //double frontArmDown = -gamepad2.right_trigger;
 
-        //boolean elbowFOn = false;
-
+        //force stop and reset
         if (gamepad1.left_bumper && gamepad1.right_bumper && gamepad1.left_stick_button){
             bronto.frontArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
 
-         if (-gamepad2.right_stick_y > 0) { intakePow = gamepad2.right_stick_y;}
-        else if (gamepad2.right_stick_y > 0) {intakePow = gamepad2.right_stick_y;}
+        //manual intake/outake control
+        //changed to gamepad2 bumpers b/c unused rn
+        if (gamepad2.right_trigger != 0) { outakePow = gamepad2.right_trigger;}
+        else if (gamepad2.right_bumper == true) {outakePow = -1;}
+        else {outakePow = 0;}
+
+        if (gamepad2.left_trigger != 0) { intakePow = gamepad2.left_trigger;}
+        else if (gamepad2.left_bumper == true) {intakePow = -1;}
         else {intakePow = 0;}
 
-    /*
+        /*
         if (gamepad2.right_stick_button){
             manualMode = !manualMode;
         }
-
-
-        /*
-        if (frontArmUp > 0) {
-            bronto.frontArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            frontArmPow = frontArmUp;
-        } else if (frontArmDown < 0) {
-            bronto.frontArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            frontArmPow = frontArmDown;
-        }
-        else{
-
-            frontArmPow = 0;
-
-        }
-
          */
 
-          if (gamepad2.left_stick_x != 0) {
-              frontElbowTarget += (gamepad2.left_stick_x * 10);
-          } else if (gamepad2.left_stick_y != 0) {
-              backElbowTarget += (gamepad2.left_stick_y * 10);
-          }
-
-          if (gamepad2.right_stick_x != 0) {
-              frontArmTarget += (gamepad2.right_stick_x * 100);
-          } else if (gamepad2.right_stick_y != 0) {
-              backArmTarget += (gamepad2.right_stick_y * 100);
-          }
-
-
-          if (drive != 0 || turn != 0) {
-              leftFPower = Range.clip(drive + turn, -1.0, 1.0);
-              rightFPower = Range.clip(drive - turn, -1.0, 1.0);
-              leftBPower = Range.clip(drive + turn, -1.0, 1.0);
-              rightBPower = Range.clip(drive - turn, -1.0, 1.0);
-          } else if (strafe != 0) {
-              /* Strafing */
-              leftFPower = -strafe;
-              rightFPower = strafe;
-              leftBPower = strafe;
-              rightBPower = -strafe;
-          } else {
-              leftFPower = 0;
-              rightFPower = 0;
-              leftBPower = 0;
-              rightBPower = 0;
-          }
-
-/*if(colorSensor.green() > 138 && colorSensor.red() > 138 && colorSensor.green() >colorSensor.red()){
-    telemetry.addData("color", "Yellow Detected!");
-}*/
-                if (gamepad2.y) {
-                    state = TeleOpStates.MOVING;
-                    nextState = TeleOpStates.TRANSFER;
-                    frontElbowTarget = bronto.elbowTransferPos;
-                    backElbowTarget = bronto.backElbowTransferPos;
-                    frontArmTarget = bronto.transferPos;
-                    backArmTarget = bronto.backHighPolePos;
-                    /* bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.transferPos);
-                    bronto.move_to_position_and_hold(bronto.frontElbow, .5, bronto.elbowTransferPos);
-                    bronto.move_to_position_and_hold(bronto.backArm, 1, bronto.backHighPolePos);
-                    bronto.move_to_position_and_hold(bronto.backElbow, .5, bronto.backElbowTransferPos);
-                    intakePow = 1;
-                    state = TeleOpStates.TRANSFER;
-                     */
-
-                } else if (gamepad1.x) {
-                    state = TeleOpStates.MOVING;
-                    nextState = TeleOpStates.DELIVERING;
-                    frontElbowTarget = bronto.elbowIntakePos;
-                    backElbowTarget = bronto.backElbowDeliveryPosHigh;
-                    frontArmTarget = bronto.intakePos;
-                    backArmTarget = bronto.backHighPolePos;
-                    /*
-                    bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.highPolePos);
-                    bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.elbowDeliveryPosHigh);
-                    state = TeleOpStates.DELIVERING;
-
-                     */
-
-                } else if (gamepad1.b) {
-                    state = TeleOpStates.MOVING;
-                    nextState = TeleOpStates.DELIVERING;
-                    frontElbowTarget = bronto.elbowIntakePos;
-                    backElbowTarget = bronto.backElbowDeliveryPosMed;
-                    frontArmTarget = bronto.intakePos;
-                    backArmTarget = bronto.backMedPolePos;
-                    /*
-                    bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.medPolePos);
-                    bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.elbowDeliveryPosMed);
-                    state = TeleOpStates.DELIVERING;
-                     */
-                } else if (gamepad1.a) {
-                    state = TeleOpStates.MOVING;
-                    nextState = TeleOpStates.DELIVERING;
-                    frontElbowTarget = bronto.elbowIntakePos;
-                    backElbowTarget = bronto.backElbowDeliveryPosLow;
-                    frontArmTarget = bronto.intakePos;
-                    backArmTarget = bronto.backLowPolePos;
-                    /*
-                    bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.lowPolePos);
-                    bronto.move_to_position_and_hold(bronto.frontElbow, 0.5, bronto.elbowDeliveryPosLow);
-                    state = TeleOpStates.DELIVERING;
-                     */
-                }
-
-                //setting next state
-                switch (state) {
-                    case RESTING:
-                        telemetry.addData("Arm Position", "Resting");
-
-                        break;
-                    case DELIVERING:
-                        telemetry.addData("Arm Position", "High Pole");
-                        //TODO: MAKE OUTTAKE pwr
-                        intakePow = -1;
-                      if  (bronto.returnColor(bronto.backIntakeSensor) == "unknown"){
-                        intakePow = 0;}
-                        state = TeleOpStates.UNKNOWN;
-
-                        break;
-                    case INTAKE:
-                        telemetry.addData("Arm Position", "Intake");
-                        //TODO: MAKE INTAKE PWR
-                        intakePow = 1;
-                        if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown"){
-                            intakePow = 0;}
-                            state = TeleOpStates.UNKNOWN;
-                        break;
-                    case MOVING:
-                        telemetry.addData("Arm Position", "Moving");
-                        if (bronto.closeEnough (bronto.frontElbow.getCurrentPosition(), frontElbowTarget, 2) &&
-                                bronto.closeEnough (bronto.backElbow.getCurrentPosition(), backElbowTarget, 2) &&
-                                bronto.closeEnough (bronto.frontArm.getCurrentPosition(), frontArmTarget, 5) &&
-                                bronto.closeEnough (bronto.backArm.getCurrentPosition(), backArmTarget, 5)) {
-                            state = nextState;
-                            nextState = TeleOpStates.UNKNOWN;
-                        }
-
-                        break;
-                    case TRANSFER:
-                        telemetry.addData("Arm Position", "Transfer");
-                        if (bronto.returnColor(bronto.transferSensor) != "unknown"){
-                        intakePow = 1;}
-                        if (bronto.returnColor(bronto.backIntakeSensor) != "unknown"){
-                            intakePow = 0;}
-                            state = TeleOpStates.UNKNOWN;
-                        break;
-                    case UNKNOWN:
-                        telemetry.addData("Arm Position", "Unknown");
-
-                        break;
-                    default:
-                        state = TeleOpStates.UNKNOWN;
-                        telemetry.addData("Arm Position", "Unknown");
-
-                }
-
-
-                bronto.leftFront.setPower(leftFPower);
-                bronto.leftRear.setPower(leftBPower);
-                bronto.rightFront.setPower(rightFPower);
-                bronto.rightRear.setPower(rightBPower);
-                bronto.frontIntakeL.setPower(intakePow);
-                bronto.frontIntakeR.setPower(intakePow);
-                //if arm motors are close enough, set to 0 b/c power draw and worm gear already holds it
-                if (bronto.closeEnough(bronto.frontArm.getCurrentPosition(), frontArmTarget, 15)) {
-                    bronto.frontArm.setPower(0);
-                } else bronto.frontArmComponent.moveUsingPID(frontArmTarget);
-                if (bronto.closeEnough(bronto.backArm.getCurrentPosition(), backArmTarget, 15)) {
-                    bronto.backArm.setPower(0);
-                } else bronto.backArmComponent.moveUsingPID(backArmTarget);
-                bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
-                bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-
-
-        telemetry.addData("frontArm", bronto.frontArm.getCurrentPosition());
-        telemetry.addData("frontElbow", bronto.frontElbow.getCurrentPosition());
-        telemetry.addData("backArm", bronto.backArm.getCurrentPosition());
-        telemetry.addData("backElbow", bronto.backElbow.getCurrentPosition());
-                telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
-               // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
-                telemetry.update();
-            }
-
-            /** Code to run ONCE after the driver hits STOP. */
-            @Override
-            public void stop () {
-            }
+        //manual arm control
+        if (gamepad2.left_stick_x != 0) { //manual control just changes target, large numbers b/c large ticks needed
+            frontElbowTarget += (gamepad2.left_stick_x * 10);
+        } else if (gamepad2.left_stick_y != 0) {
+            backElbowTarget += (gamepad2.left_stick_y * 10);
         }
+
+        if (gamepad2.right_stick_x != 0) {
+            frontArmTarget += (gamepad2.right_stick_x * 50);
+        } else if (gamepad2.right_stick_y != 0) {
+            backArmTarget += (gamepad2.right_stick_y * 50);
+        }
+
+        //calculate drive pwr
+        if (drive != 0 || turn != 0) {
+            leftFPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightFPower = Range.clip(drive - turn, -1.0, 1.0);
+            leftBPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightBPower = Range.clip(drive - turn, -1.0, 1.0);
+        } else if (strafe != 0) {
+            /* Strafing */
+            leftFPower = -strafe;
+            rightFPower = strafe;
+            leftBPower = strafe;
+            rightBPower = -strafe;
+        } else {
+            leftFPower = 0;
+            rightFPower = 0;
+            leftBPower = 0;
+            rightBPower = 0;
+        }
+
+        if (gamepad1.a && gamepad1.y) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.RESTING;
+            frontElbowTarget = bronto.frontElbowRestPos;
+            backElbowTarget = bronto.backElbowRestPos;
+            frontArmTarget = bronto.frontArmRestPos;
+            backArmTarget = bronto.backArmRestPos;
+        } else if (gamepad1.a && gamepad1.x) {
+            state = TeleOpStates.MOVING;
+
+        } else if (gamepad1.y) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.TRANSFER;
+            frontElbowTarget = bronto.frontElbowTransPos;
+            backElbowTarget = bronto.backElbowTransPos;
+            frontArmTarget = bronto.frontArmTransPos;
+            backArmTarget = bronto.backArmHighPos;
+        } else if (gamepad1.x) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.DELIVERING;
+            frontElbowTarget = bronto.frontElbowIntakePos;
+            backElbowTarget = bronto.backElbowHighPos;
+            frontArmTarget = bronto.frontArmIntakePos;
+            backArmTarget = bronto.backArmHighPos;
+        } else if (gamepad1.b) { //changing from medium pole to intake cuz apparently thats not here
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.INTAKE;
+            frontElbowTarget = bronto.frontElbowIntakePos;
+            backElbowTarget = bronto.backElbowHighPos;
+            frontArmTarget = bronto.frontArmIntakePos;
+            backArmTarget = bronto.backArmHighPos;
+        }
+
+        /* else if (gamepad1.a) {
+            state = TeleOpStates.MOVING;
+            nextState = TeleOpStates.DELIVERING;
+            frontElbowTarget = bronto.frontElbowIntakePos;
+            backElbowTarget = bronto.backElbowLowPos;
+            frontArmTarget = bronto.frontArmIntakePos;
+            backArmTarget = bronto.backArmLowPos;
+        }
+        */
+
+        //setting next state
+        switch (state) {
+            case RESTING:
+                telemetry.addData("Arm State", "Resting");
+
+                //checks if closeEnough AND button pressed to set power to 0 with bool
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                    frontArmIsClose = true;
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                    backArmIsClose = true;
+                }
+
+                break;
+            case DRIVING:
+                telemetry.addData("Arm State", "Driving");
+
+                //checks if closeEnough AND button pressed to set power to 0 with bool
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                    frontArmIsClose = true;
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                    backArmIsClose = true;
+                }
+
+                break;
+            case DELIVERING:
+                telemetry.addData("Arm State", "High Pole");
+
+                telemetry.addData("Distances Array 0", distances[0]);
+                telemetry.addData("Distances Array 1", distances[1]);
+                telemetry.addData("Distances Array 2", distances[2]);
+                //really stupid way to do a running average but i dont care have fun!
+                //also TODO: make this a method or class
+                double distAvg = bronto.backHighDist;
+                if (distances[2] != 0) {
+                    distances [2] = distances [1]; //pushback old values
+                    distances [1] = distances [0];
+                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
+                    distAvg = (distances[0] + distances[1] + distances[2]) / 3;
+                } else if (distances[0] == 0) { //dummy easy way to add values at beginning
+                    distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                } else if (distances[1] == 0) {
+                    distances [1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                } else {
+                    distances [2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                }
+                telemetry.addData("Distances Avg", distAvg);
+                //TODO: check if should be -= and adjust target
+                backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
+
+                //checks if closeEnough AND button pressed to set power to 0 with bool
+                //if only target close enough and buttong NOT pressed, increments target until buttons pressed
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                    frontArmIsClose = true;
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                    backArmIsClose = true;
+                } else if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                    backArmTarget -= 20; //if motor is reversed, this must be +=
+                }
+
+                //checks if front/back arm are close enough and if distance is close enough
+                if (backArmIsClose && bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
+                    outakePow = -1;
+                    if (bronto.returnColor(bronto.backIntakeSensor) == "unknown") {
+                        outakePow = 0;
+                        state = TeleOpStates.UNKNOWN;
+                    }
+                }
+
+                break;
+            case INTAKE:
+                telemetry.addData("Arm State", "Intake");
+                        /*
+                        basically this should add to the target some small value once it is intaking to fine tune its
+                        distance from the ground
+                         */
+                frontElbowTarget -= bronto.moveByDistance(bronto.frontDistanceSensor, bronto.frontIntakeDist);
+                intakePow = -1;
+                telemetry.addData ("Front Color: ", bronto.returnColor(bronto.frontIntakeSensor));
+                if (bronto.returnColor(bronto.frontIntakeSensor) != "unknown"){
+                    intakePow = 0;
+                    state = TeleOpStates.UNKNOWN;
+                }
+
+                //checks if closeEnough AND button pressed to set power to 0 with bool
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                    frontArmIsClose = true;
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                    backArmIsClose = true;
+                }
+
+                break;
+            case MOVING:
+                telemetry.addData("Arm State", "Moving");
+                if (nextState == TeleOpStates.DELIVERING){
+                frontArmMoving = true;
+                backArmMoving = true;
+                }
+                else if (nextState == TeleOpStates.TRANSFER){
+                    frontArmMoving = true;
+                    backArmMoving = true;
+                }
+                else if (nextState == TeleOpStates.INTAKE){
+                    frontArmMoving = true;
+                    backArmMoving = true;
+                }
+                if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
+                        bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20) &&
+                        bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
+                        bronto.backArmComponent.motorCloseEnough(backArmTarget, 50)) { //putting range high because it will keep moving
+                    state = nextState;
+                    nextState = TeleOpStates.UNKNOWN;
+                }
+
+                break;
+            case TRANSFER:
+                telemetry.addData("Arm State", "Transfer");
+                //TODO: check if should be -= and adjust target
+                //thus both should be at the same height and aligned
+                //frontElbowTarget += bronto.moveByDistance(bronto.frontDistanceSensor, 50);
+                //backElbowTarget += bronto.moveByDistance(bronto.backDistanceSensor, 50);
+                //TODO: if the above works well, we should porbably incorporate as an && for the transfer position detection rather than a constant loop
+                /*
+                //commenting out until transfer sensor is connected
+                if (bronto.returnColor(bronto.transferSensor) != "unknown"){
+                    intakePow = 1;}
+
+                 */
+
+                //if motor close enough but button not pressed increment both arms
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                    frontArmIsClose = true;
+                } else if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                    frontArmTarget += 20; //if motor is reversed, this must be -=
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                    backArmIsClose = true;
+                } else if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                    backArmTarget -= 20; //if motor is reversed, this must be +=
+                }
+
+                //checks if front/back arm are close enough to begin transfer
+                if (frontArmIsClose && backArmIsClose) {
+                    intakePow = -1;
+                    outakePow = -1;
+                    if (bronto.returnColor(bronto.backIntakeSensor) != "unknown" && bronto.returnColor(bronto.frontIntakeSensor) == "unknown"){
+                        intakePow = 0;
+                        state = TeleOpStates.UNKNOWN;
+                    }
+                }
+
+                break;
+            case UNKNOWN:
+                telemetry.addData("Arm State", "Unknown");
+                //checks if closeEnough to set power to 0 with bool
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                    frontArmIsClose = true;
+                }
+                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                    backArmIsClose = true;
+                }
+
+                break;
+            default:
+                state = TeleOpStates.UNKNOWN;
+                telemetry.addData("Arm Position", "Unknown");
+
+        }
+
+        bronto.leftFront.setPower(leftFPower);
+        bronto.leftRear.setPower(leftBPower);
+        bronto.rightFront.setPower(rightFPower);
+        bronto.rightRear.setPower(rightBPower);
+        bronto.frontIntakeL.setPower(intakePow);
+        bronto.frontIntakeR.setPower(intakePow);
+        bronto.backIntakeL.setPower(outakePow);
+        bronto.backIntakeR.setPower(outakePow);
+
+        if (frontArmTarget > 5500) {
+            frontArmTarget = 5500;
+        } else if (frontArmTarget < 0) {
+            frontArmTarget = 0;
+        }
+        if (backArmTarget < -6200) {
+            backArmTarget = -6200;
+        } else if (backArmTarget > 0) {
+            backArmTarget = 0;
+        }
+
+        //after going through every state to determine what is close for the arms, set to 0 if they are close enough
+        if (frontArmIsClose) {bronto.frontArm.setPower(0);}
+        else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
+        if (backArmIsClose) {bronto.backArm.setPower(0);}
+        else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
+
+        if (frontArmMoving){bronto.frontElbow.setPower(0);}
+        else {bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);}
+        if (backArmMoving) {bronto.backArm.setPower(0);}
+        else {bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
+
+
+        bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+        bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+
+        telemetry.addLine();
+        telemetry.addData("frontArm Target", frontArmTarget);
+        telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
+        telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("frontElbow Target", frontElbowTarget);
+        telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
+        telemetry.addData("frontElbow Pwr", bronto.frontElbow.getPower());
+        telemetry.addLine();
+        telemetry.addData("backArm Target", backArmTarget);
+        telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
+        telemetry.addData("backArm Pwr", bronto.backArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("backElbow Target", backElbowTarget);
+        telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
+        telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
+        telemetry.addLine();
+        telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
+        //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
+        // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
+        telemetry.update();
+    }
+
+    /** Code to run ONCE after the driver hits STOP. */
+    @Override
+    public void stop () {
+    }
+}
