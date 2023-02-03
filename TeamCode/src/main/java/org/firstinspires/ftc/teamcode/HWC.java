@@ -49,7 +49,7 @@ public class HWC {
     // Roadrunner start positions
     public final Pose2d START_POS_RIGHT = new Pose2d(35, -60, Math.toRadians(90));
     public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90)); // TODO: Change Coords
-
+    public final Pose2d START_POS_TELEOP = new Pose2d(0, -60, Math.toRadians(90));
     // Roadrunner drive
     public SampleMecanumDrive drive;
 
@@ -267,11 +267,10 @@ public class HWC {
         return color;
     }
 
-    public boolean betterSleep(int milliseconds){
+    public void betterSleep(int milliseconds){
         time.reset();
         while (time.milliseconds() > milliseconds){}
-        return true;
-
+        telemetry.addData("slept for ", milliseconds);
     }
 
     public int fixEncoderPos(DistanceSensor distance,TouchSensor button, int prevPos){

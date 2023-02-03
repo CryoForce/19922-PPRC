@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class TC {
+    // Right Movement Stuff
     public static Trajectory RIGHT_deliverPreloadLeft(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
                 .strafeLeft(36)
@@ -37,8 +38,7 @@ public class TC {
                 .build();
     }
 
-
-    // LEFT movment stuff for auton
+    // LEFT movement stuff for auton
     public static Trajectory LEFT_deliverPreloadRight(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
                 .strafeRight(36)
@@ -68,5 +68,25 @@ public class TC {
         return drive.trajectoryBuilder(pos)
                 .strafeLeft(59)
                 .build();
+    }
+
+    // General Movement
+    public static Trajectory forwardToOpenArms(SampleMecanumDrive drive, Pose2d pos) {
+        return drive.trajectoryBuilder(pos)
+                .forward(2) //TODO: Change the distance forward after testing auton
+                .build();
+    }
+
+    public static Trajectory TeleOp_To_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .forward(5)
+                .build();
+
+    }
+    public static Trajectory TeleOp_From_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .back(5)
+                .build();
+
     }
 }
