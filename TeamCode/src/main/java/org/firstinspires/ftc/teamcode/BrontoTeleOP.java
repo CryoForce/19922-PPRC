@@ -176,15 +176,15 @@ public class BrontoTeleOP extends OpMode
 
         //manual arm control
         if (gamepad2.left_stick_x != 0) { //manual control just changes target, large numbers b/c large ticks needed
-            frontElbowTarget += (gamepad2.left_stick_x * 10);
+            frontElbowTarget += (gamepad2.left_stick_x * 15);
         } else if (gamepad2.left_stick_y != 0) {
-            backElbowTarget += (gamepad2.left_stick_y * 10);
+            backElbowTarget += (gamepad2.left_stick_y * 15);
         }
 
         if (gamepad2.right_stick_x != 0) {
-            frontArmTarget += (gamepad2.right_stick_x * 50);
+            frontArmTarget += (gamepad2.right_stick_x * 70);
         } else if (gamepad2.right_stick_y != 0) {
-            backArmTarget += (gamepad2.right_stick_y * 50);
+            backArmTarget += (gamepad2.right_stick_y * 70);
         }
 
         //calculate drive pwr
@@ -460,7 +460,7 @@ public class BrontoTeleOP extends OpMode
         if (backArmIsClose) {bronto.backArm.setPower(0);}
         else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
 
-        if (state == TeleOpStates.MOVING){bronto.frontElbow.setPower(0); bronto.backElbow.setPower(0);}
+        if (state == TeleOpStates.MOVING || state == TeleOpStates.RESTING){bronto.frontElbow.setPower(0); bronto.backElbow.setPower(0);}
         else {bronto.frontElbowComponent.moveUsingPID(frontElbowTarget); bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
 
 
