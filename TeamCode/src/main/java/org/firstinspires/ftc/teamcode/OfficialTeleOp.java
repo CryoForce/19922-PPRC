@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
+@Disabled
 @TeleOp(name="19922-Official TeleOp", group="Iterative Opmode")
 
 public class OfficialTeleOp extends OpMode
@@ -86,8 +88,8 @@ public class OfficialTeleOp extends OpMode
         double turn  =  gamepad1.left_stick_x * 0.6;
         double strafe = -gamepad1.right_stick_x * 0.8;
         boolean frontArmUp = gamepad2.right_bumper;
-        double frontArmDown = -gamepad2.right_trigger;
-        boolean backArmUp = gamepad2.left_bumper;
+        boolean frontArmDown = gamepad2.left_bumper;
+        double backArmUp = gamepad2.right_trigger;
         double backArmDown = -gamepad2.left_trigger;
 
         boolean elbowFOn = false;
@@ -103,16 +105,16 @@ public class OfficialTeleOp extends OpMode
         if (frontArmUp) {
             bronto.frontArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             frontArmPow = 1;
-        } else if (frontArmDown < 0) {
+        } else if (frontArmDown) {
             bronto.frontArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            frontArmPow = frontArmDown;}
+            frontArmPow = -1;}
         else{
             frontArmPow = 0;}
 
-        if (backArmUp) {
+        if (backArmUp > 1) {
             bronto.backArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            backArmPow = 1;
-        } else if (backArmDown < 0) {
+            backArmPow = backArmUp;
+        } else if (backArmDown != 0) {
             bronto.backArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             backArmPow = backArmDown;
         }
@@ -184,57 +186,57 @@ public class OfficialTeleOp extends OpMode
             bronto.frontArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             bronto.frontArm.setPower(1);
             if (bronto.frontButton.getValue() > 0.9 && bronto.frontArm.getCurrentPosition() > 500 || bronto.frontArm.getCurrentPosition() > 4000){
-                bronto.highPolePos = bronto.frontArm.getCurrentPosition();
-                bronto.transferPos = bronto.frontArm.getCurrentPosition();
+                bronto.frontArmHighPos = bronto.frontArm.getCurrentPosition();
+                bronto.frontArmTransPos = bronto.frontArm.getCurrentPosition();
                 bronto.move_to_position_and_hold(bronto.frontArm, 1 , bronto.frontArm.getCurrentPosition());
 
             }
             bronto.backArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             bronto.backArm.setPower(1);
-            if (bronto.rearButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500 || bronto.backArm.getCurrentPosition() > 4000){
+            if (bronto.backButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500 || bronto.backArm.getCurrentPosition() > 4000){
                 bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArm.getCurrentPosition());
-                bronto.backHighPolePos = bronto.backArm.getCurrentPosition();
+                bronto.backArmHighPos = bronto.backArm.getCurrentPosition();
             }
             //while(bronto.frontArm.getCurrentPosition() != bronto.frontArm.getTargetPosition()){telemetry.addData("moving", "true");}
-            bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.elbowTransferPos);
-            bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowTransferPos);
+            bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.frontElbowTransPos);
+            bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowTransPos);
 
             state = TeleOpStates.TRANSFER;
         }
 
         else if (gamepad1.x && gamepad1.y) {
 
-            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backHighPolePos);
-            bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.highPolePos);
+            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArmHighPos);
+            bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.frontArmHighPos);
             if (bronto.frontButton.getValue() > 0.9 && bronto.frontArm.getCurrentPosition() > 500){
-                bronto.highPolePos = bronto.frontArm.getCurrentPosition();
-                bronto.transferPos = bronto.frontArm.getCurrentPosition();
+                bronto.frontArmHighPos = bronto.frontArm.getCurrentPosition();
+                bronto.frontArmTransPos = bronto.frontArm.getCurrentPosition();
                 bronto.move_to_position_and_hold(bronto.frontArm, 1 , bronto.frontArm.getCurrentPosition());
             }
-            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backHighPolePos);
-            if (bronto.rearButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500){
+            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArmHighPos);
+            if (bronto.backButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500){
                 bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArm.getCurrentPosition());
-                bronto.backHighPolePos = bronto.backArm.getCurrentPosition();
+                bronto.backArmHighPos = bronto.backArm.getCurrentPosition();
             }
-                bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.elbowDeliveryPosHigh);
-                bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowDeliveryPosHigh);
+                bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.frontElbowHighPos);
+                bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowHighPos);
 
                 state = TeleOpStates.HIGH_POLE;}
           else if (gamepad1.x){
-            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backHighPolePos);
-            if (bronto.rearButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500){
+            bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArmHighPos);
+            if (bronto.backButton.getValue() > 0.9 && bronto.backArm.getCurrentPosition() > 500){
                 bronto.move_to_position_and_hold(bronto.backArm,1, bronto.backArm.getCurrentPosition());
-                bronto.backHighPolePos = bronto.backArm.getCurrentPosition();
+                bronto.backArmHighPos = bronto.backArm.getCurrentPosition();
             }
-            bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowDeliveryPosHigh);
+            bronto.move_to_position_and_hold(bronto.backElbow, 1, bronto.backElbowHighPos);
         }
           else if (gamepad1.dpad_right) {
-            bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.intakePos);
+            bronto.move_to_position_and_hold(bronto.frontArm, 1, bronto.frontArmIntakePos);
             if (bronto.frontButton.getValue() > 0.9 && bronto.frontArm.getCurrentPosition() < 500){
-                bronto.intakePos = bronto.frontArm.getCurrentPosition();
+                bronto.frontArmIntakePos = bronto.frontArm.getCurrentPosition();
                 bronto.move_to_position_and_hold(bronto.frontArm, 1 , bronto.frontArm.getCurrentPosition());
             }
-            bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.elbowIntakePos);
+            bronto.move_to_position_and_hold(bronto.frontElbow, 1, bronto.frontElbowIntakePos);
 
             state = TeleOpStates.INTAKE;
         }

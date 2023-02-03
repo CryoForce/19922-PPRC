@@ -14,7 +14,6 @@ public class VisionTest extends LinearOpMode {
     SleeveDetection sleeveDetection = new SleeveDetection(145,168,30,50);
     OpenCvCamera camera;
     String webcamName = "Webcam 1";
-
     @Override
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

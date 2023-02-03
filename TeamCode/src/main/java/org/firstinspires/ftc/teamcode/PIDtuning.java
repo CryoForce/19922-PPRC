@@ -23,7 +23,7 @@ public class PIDtuning extends OpMode {
         controller = new PIDController (p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        arm_motor= hardwareMap.get(DcMotorEx.class, "frontArm");
+        arm_motor= hardwareMap.get(DcMotorEx.class, "backElbow");
         arm_motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         arm_motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -32,6 +32,19 @@ public class PIDtuning extends OpMode {
 
     @Override
     public void loop() {
+        if (gamepad1.dpad_down) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "backElbow");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_up) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "frontElbow");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_right) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "frontArm");
+            p = 0; i = 0; d = 0; f = 0;
+        } else if (gamepad1.dpad_left) {
+            arm_motor= hardwareMap.get(DcMotorEx.class, "backArm");
+            p = 0; i = 0; d = 0; f = 0;
+        }
         controller.setPID (p,i,d);
         int armPos = arm_motor.getCurrentPosition();
         double pid = controller.calculate(armPos, target);
@@ -41,6 +54,7 @@ public class PIDtuning extends OpMode {
 
         arm_motor.setPower(power);
 
+        telemetry.addData("motor: ", arm_motor.getDeviceName());
         telemetry.addData("pos", armPos);
         telemetry.addData("target ", target);
         telemetry.addData("power ", power);
