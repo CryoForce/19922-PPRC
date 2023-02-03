@@ -76,4 +76,17 @@ public class TC {
                 .forward(2) //TODO: Change the distance forward after testing auton
                 .build();
     }
+
+    public static Trajectory TeleOp_To_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .forward(5)
+                .build();
+
+    }
+    public static Trajectory TeleOp_From_Pole(SampleMecanumDrive drive, Pose2d pos){
+        return drive.trajectoryBuilder(pos)
+                .back(5)
+                .build();
+
+    }
 }
