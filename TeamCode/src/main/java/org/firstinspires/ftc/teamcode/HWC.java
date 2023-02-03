@@ -49,7 +49,7 @@ public class HWC {
     // Roadrunner start positions
     public final Pose2d START_POS_RIGHT = new Pose2d(35, -60, Math.toRadians(90));
     public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90)); // TODO: Change Coords
-
+    public final Pose2d START_POS_TELEOP = new Pose2d(0, -60, Math.toRadians(90));
     // Roadrunner drive
     public SampleMecanumDrive drive;
 
