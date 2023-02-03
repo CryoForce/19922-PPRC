@@ -52,21 +52,21 @@ public class TC {
     //parking zone trajectory code 1-3
     public static Trajectory LEFT_forwardToPark(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .forward(11)
+                .forward(8)
                 .build();
     }
     public static Trajectory LEFT_parkingZone1(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .strafeLeft(11)
+                .strafeLeft(12)
                 .build();
     }
     public static Trajectory LEFT_parkingZone2(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .strafeLeft(36)
+                .strafeLeft(37)
                 .build();
     }public static Trajectory LEFT_parkingZone3(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .strafeLeft(59)
+                .strafeLeft(60)
                 .build();
     }
 
@@ -74,6 +74,12 @@ public class TC {
     public static Trajectory forwardToOpenArms(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
                 .forward(2) //TODO: Change the distance forward after testing auton
+                .build();
+    }
+
+    public static Trajectory forward(SampleMecanumDrive drive, Pose2d pos, int distance) {
+        return drive.trajectoryBuilder(pos)
+                .forward(distance)
                 .build();
     }
 }

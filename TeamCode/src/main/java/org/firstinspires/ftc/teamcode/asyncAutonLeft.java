@@ -51,6 +51,11 @@ public class asyncAutonLeft extends LinearOpMode {
         bronto.drive.followTrajectoryAsync(TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT));
         Pose2d newPos = TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT).end();
 
+        bronto.drive.update();
+        while(bronto.drive.isBusy()) {
+            bronto.drive.update();
+        }
+
         // Move arms out slightly
         while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)
                 && !bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)

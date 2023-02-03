@@ -37,9 +37,7 @@ public class autonLeft extends LinearOpMode {
         // Set Starting Position Estimate for RoadRunner
         bronto.drive.setPoseEstimate(bronto.START_POS_LEFT);
 
-        // Update Telemetry
-        telemetry.addData("Status", "Running");
-        telemetry.update();
+
 
         // Drive to location to deliver preload cone
         bronto.drive.followTrajectory(TC.LEFT_deliverPreloadRight(bronto.drive, bronto.START_POS_LEFT));
@@ -52,7 +50,9 @@ public class autonLeft extends LinearOpMode {
         bronto.backElbow.setPower(0.5);
         bronto.frontElbow.setPower(0.5);
         sleep(1000);
-        bronto.backElbow.setPower(0);
+        bronto.backElbow.setPower(0);        // Update Telemetry
+        telemetry.addData("Status", "Running");
+        telemetry.update();
         bronto.frontElbow.setPower(0);
 
         // Reset Elbow Encoders
