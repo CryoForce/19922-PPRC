@@ -81,18 +81,12 @@ public class TC {
         return drive.trajectoryBuilder(pos)
                 .forward(distance)
                 .build();
-    }
 
-    public static Trajectory TeleOp_To_Pole(SampleMecanumDrive drive, Pose2d pos){
-        return drive.trajectoryBuilder(pos)
-                .forward(5)
-                .build();
 
     }
-    public static Trajectory TeleOp_From_Pole(SampleMecanumDrive drive, Pose2d pos){
+    public static Trajectory backwards(SampleMecanumDrive drive, Pose2d pos, int distance) {
         return drive.trajectoryBuilder(pos)
-                .back(5)
+                .back(distance)
                 .build();
-
     }
 }
