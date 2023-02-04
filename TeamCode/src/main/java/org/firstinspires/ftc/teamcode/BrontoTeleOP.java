@@ -36,8 +36,8 @@ public class BrontoTeleOP extends OpMode
 
     int frontArmTarget = 0;
     int backArmTarget = 0;
-    int frontElbowTarget = bronto.frontElbowHighPos;
-    int backElbowTarget = 0;
+    int frontElbowTarget = 0;
+    int backElbowTarget = bronto.backElbowHighPos;
     int autoCycle = -1;
 
     double [] distances = new double [3];
