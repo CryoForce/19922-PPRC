@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous
+@Disabled
 public class autonLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -27,7 +29,7 @@ public class autonLeft extends LinearOpMode {
         // Get Computer Vision from Signal Cone
         brain.cv();
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", bronto.sleeveDetection.getPosition());
+            telemetry.addData("ZONE: ", bronto.sleeveDetection.getPosition());
             telemetry.update();
 
             bronto.parkingZone = bronto.sleeveDetection.getPosition();
@@ -46,7 +48,6 @@ public class autonLeft extends LinearOpMode {
         newPos = TC.LEFT_deliverPreloadForward(bronto.drive, newPos).end();
 
         // Flop out elbows
-        // TODO: Check power vals for this:
         bronto.backElbow.setPower(0.5);
         bronto.frontElbow.setPower(0.5);
         sleep(1000);
@@ -124,8 +125,6 @@ public class autonLeft extends LinearOpMode {
         // Stop Intake
         bronto.backIntakeL.setPower(0);
         bronto.backIntakeR.setPower(0);
-
-        // TODO: Move arms to drive pos
 
         // Drive to parking location based off of CV from earlier
         bronto.drive.followTrajectory(TC.LEFT_forwardToPark(bronto.drive, newPos));

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Autonomous
 public class asyncAutonLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +26,7 @@ public class asyncAutonLeft extends LinearOpMode {
         // Get Computer Vision from Signal Cone
         brain.cv();
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", bronto.sleeveDetection.getPosition());
+            telemetry.addData("ZONE: ", bronto.sleeveDetection.getPosition());
             telemetry.update();
 
             bronto.parkingZone = bronto.sleeveDetection.getPosition();
@@ -32,48 +34,20 @@ public class asyncAutonLeft extends LinearOpMode {
 
         // Set arm targets
         int backArmTarget = bronto.backArmDrivePos;
-        int backElbowTarget = bronto.backElbowDrivePos;
+        int backElbowTarget = bronto.backElbowAutonDrivePos;
         int frontArmTarget = bronto.frontArmDrivePos;
-        int frontElbowTarget = bronto.frontElbowDrivePos;
+        int frontElbowTarget = bronto.frontElbowAutonDrivePos;
 
         // Wait for Drivers to start
         waitForStart();
 
         // Set Starting Position Estimate for RoadRunner
         bronto.drive.setPoseEstimate(bronto.START_POS_LEFT);
+        Pose2d newPos = bronto.START_POS_LEFT;
 
         // Update Telemetry
         telemetry.addData("Status", "Running");
         telemetry.update();
-
-        // ------------------- FORWARD TO OPEN ARMS ------------------- //
-        // Move Forward to open the arms
-        bronto.drive.followTrajectoryAsync(TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT));
-        Pose2d newPos = TC.forwardToOpenArms(bronto.drive, bronto.START_POS_LEFT).end();
-
-        bronto.drive.update();
-        while(bronto.drive.isBusy()) {
-            bronto.drive.update();
-        }
-
-        // Move arms out slightly
-        while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)
-                && !bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
-                && !bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
-                && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20)) {
-            bronto.backArmComponent.moveUsingPID(backArmTarget);
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontArmComponent.moveUsingPID(frontArmTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
-        }
-
-        // Move while holding Elbows out
-        bronto.drive.update();
-        while(bronto.drive.isBusy()) {
-            bronto.drive.update();
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
-        }
 
         // ----------------------------- STRAFE LEFT ----------------------------- //
         // Set Trajectory
@@ -101,12 +75,13 @@ public class asyncAutonLeft extends LinearOpMode {
             bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
         }
 
-        // ----------------------------- FLOP OUT ELBOWS & RESET ENCODERS ----------------------------- //
-        // TODO: Check power vals for this:
-        bronto.backElbow.setPower(0.5);
+        // Flop out elbows
+        bronto.backElbow.setPower(-0.5);
         bronto.frontElbow.setPower(0.5);
         sleep(1000);
-        bronto.backElbow.setPower(0);
+        bronto.backElbow.setPower(0);        // Update Telemetry
+        telemetry.addData("Status", "Running");
+        telemetry.update();
         bronto.frontElbow.setPower(0);
 
         // Reset Elbow Encoders
