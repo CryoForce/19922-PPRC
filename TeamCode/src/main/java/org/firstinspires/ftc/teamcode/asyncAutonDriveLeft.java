@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
-public class asyncAutonTesting extends LinearOpMode {
+public class asyncAutonDriveLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Tell driver bronto is initializing
