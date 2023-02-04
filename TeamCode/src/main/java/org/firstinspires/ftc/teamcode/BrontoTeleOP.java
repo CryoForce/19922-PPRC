@@ -36,7 +36,7 @@ public class BrontoTeleOP extends OpMode
 
     int frontArmTarget = 0;
     int backArmTarget = 0;
-    int frontElbowTarget = 0;
+    int frontElbowTarget = bronto.frontElbowHighPos;
     int backElbowTarget = 0;
     int autoCycle = -1;
 
@@ -123,8 +123,8 @@ public class BrontoTeleOP extends OpMode
 
         switch (autoCycle) {
             case 3: // Moves to intake
-                bronto.drive.followTrajectory(TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP));
-                Pose2d newPos2 = TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
+                bronto.drive.followTrajectory(TC.forward(bronto.drive, bronto.START_POS_TELEOP, 5));
+                Pose2d newPos2 = TC.forward(bronto.drive, bronto.START_POS_TELEOP, 5).end();
                 nextState = TeleOpStates.INTAKE;
                 frontElbowTarget = bronto.frontElbowIntakePos;
                 backElbowTarget = bronto.backElbowHighPos;
@@ -141,8 +141,8 @@ public class BrontoTeleOP extends OpMode
                 state = TeleOpStates.MOVING;
                 break;
             case 1: // moves to delivery
-                bronto.drive.followTrajectory(TC.TeleOp_To_Pole(bronto.drive, bronto.START_POS_TELEOP));
-                Pose2d newPos = TC.TeleOp_To_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
+                bronto.drive.followTrajectory(TC.backwards(bronto.drive, bronto.START_POS_TELEOP,5));
+                Pose2d newPos = TC.backwards(bronto.drive, bronto.START_POS_TELEOP,5).end();
                 //code to drive to delivery pos
                 nextState = TeleOpStates.DELIVERING;
                 frontElbowTarget = bronto.frontElbowIntakePos;
