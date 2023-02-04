@@ -78,9 +78,6 @@ public class visionAutonEz extends LinearOpMode {
 
 
 
-
-
-
         if (bronto.parkingZone == 3) {
             bronto.leftFront.setPower(1);
             bronto.leftRear.setPower(-1);
