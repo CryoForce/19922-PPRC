@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -50,7 +49,7 @@ public class HWC {
     public final Pose2d START_POS_RIGHT = new Pose2d(35, -60, Math.toRadians(90));
     public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90));
 
-    public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90)); // TODO: Change Coords
+    // TODO: Change Coords
     public final Pose2d START_POS_TELEOP = new Pose2d(0, -60, Math.toRadians(90));
     
     // Roadrunner drive
