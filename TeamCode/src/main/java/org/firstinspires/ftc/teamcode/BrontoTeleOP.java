@@ -123,8 +123,8 @@ public class BrontoTeleOP extends OpMode
 
         switch (autoCycle) {
             case 3: // Moves to intake
-                bronto.drive.followTrajectory(TC.(bronto.drive, bronto.START_POS_TELEOP));
-                Pose2d newPos = TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
+                bronto.drive.followTrajectory(TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP));
+                Pose2d newPos2 = TC.TeleOp_From_Pole(bronto.drive, bronto.START_POS_TELEOP).end();
                 nextState = TeleOpStates.INTAKE;
                 frontElbowTarget = bronto.frontElbowIntakePos;
                 backElbowTarget = bronto.backElbowHighPos;
@@ -176,15 +176,15 @@ public class BrontoTeleOP extends OpMode
 
         //manual arm control
         if (gamepad2.left_stick_x != 0) { //manual control just changes target, large numbers b/c large ticks needed
-            frontElbowTarget += (gamepad2.left_stick_x * 10);
+            frontElbowTarget += (gamepad2.left_stick_x * 15);
         } else if (gamepad2.left_stick_y != 0) {
-            backElbowTarget += (gamepad2.left_stick_y * 10);
+            backElbowTarget += (gamepad2.left_stick_y * 15);
         }
 
         if (gamepad2.right_stick_x != 0) {
-            frontArmTarget += (gamepad2.right_stick_x * 50);
+            frontArmTarget += (gamepad2.right_stick_x * 70);
         } else if (gamepad2.right_stick_y != 0) {
-            backArmTarget += (gamepad2.right_stick_y * 50);
+            backArmTarget += (gamepad2.right_stick_y * 70);
         }
 
         //calculate drive pwr
@@ -367,13 +367,13 @@ public class BrontoTeleOP extends OpMode
                 }
                 if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
                         bronto.backArmComponent.motorCloseEnough(backArmTarget, 50)) { //putting range high because it will keep moving
-                    state = TeleOpState.ELBOW_MOVING;
+                    state = TeleOpStates.ELBOW_MOVING;
                     nextState = TeleOpStates.UNKNOWN;
                 }
 
                 break;
             case ELBOW_MOVING:
-                telemetry.addData("Arm State", "Elbows moving")
+                telemetry.addData("Arm State", "Elbows moving");
                 if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
                 bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)){
                     state = nextState;
@@ -460,7 +460,7 @@ public class BrontoTeleOP extends OpMode
         if (backArmIsClose) {bronto.backArm.setPower(0);}
         else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
 
-        if (state == TeleOpStates.MOVING){bronto.frontElbow.setPower(0); bronto.backElbow.setPower(0);}
+        if (state == TeleOpStates.MOVING || state == TeleOpStates.RESTING){bronto.frontElbow.setPower(0); bronto.backElbow.setPower(0);}
         else {bronto.frontElbowComponent.moveUsingPID(frontElbowTarget); bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
 
 
