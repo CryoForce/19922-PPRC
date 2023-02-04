@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous
-@Disabled
-public class autonRight extends LinearOpMode {
-
+public class autonArmTesting extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Tell driver bronto is initializing
@@ -30,62 +26,69 @@ public class autonRight extends LinearOpMode {
         // Get Computer Vision from Signal Cone
         brain.cv();
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", bronto.sleeveDetection.getPosition());
+            telemetry.addData("ZONE: ", bronto.sleeveDetection.getPosition());
             telemetry.update();
 
             bronto.parkingZone = bronto.sleeveDetection.getPosition();
         }
 
+        // Set arm targets
+        int backArmTarget = bronto.backArmDrivePos;
+        int backElbowTarget = bronto.backElbowAutonDrivePos;
+        int frontArmTarget = bronto.frontArmDrivePos;
+        int frontElbowTarget = bronto.frontElbowAutonDrivePos;
+
         waitForStart();
-        // Set Starting Position Estimate for RoadRunner
-        bronto.drive.setPoseEstimate(bronto.START_POS_RIGHT);
 
-        // Update Telemetry
-        telemetry.addData("Status", "Running");
-        telemetry.update();
-
-        // Drive to location to deliver preload cone
-        bronto.drive.followTrajectory(TC.RIGHT_deliverPreloadLeft(bronto.drive, bronto.START_POS_RIGHT));
-        Pose2d newPos = TC.RIGHT_deliverPreloadLeft(bronto.drive, bronto.START_POS_RIGHT).end();
-        bronto.drive.followTrajectory(TC.RIGHT_deliverPreloadForward(bronto.drive, newPos));
-        newPos = TC.RIGHT_deliverPreloadForward(bronto.drive, newPos).end();
-
+        // ----------------------------- DRIVING POS ----------------------------- //
+//        while(!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
+//                && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20)) {
+//            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+//            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+//        }
+//
+        // ----------------------------- DELIVERY ----------------------------- //
         // Flop out elbows
-        // TODO: Check power vals for this:
-        bronto.backElbow.setPower(0.5);
+        bronto.backElbow.setPower(-0.5);
         bronto.frontElbow.setPower(0.5);
         sleep(1000);
-        bronto.backElbow.setPower(0);
+        bronto.backElbow.setPower(0);        // Update Telemetry
+        telemetry.addData("Status", "Running");
+        telemetry.update();
         bronto.frontElbow.setPower(0);
 
         // Reset Elbow Encoders
         bronto.backElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bronto.frontElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Set arm targets
-        int backArmTarget = bronto.backArmHighPos;
-        int backElbowTarget = bronto.backElbowHighPos;
-        int frontArmTarget = 0;
-        int frontElbowTarget = 0;
+        while(!gamepad1.a) {
+            sleep(1);
+        }
 
-        // Move arm using PID
+        // Set Targets
+        backArmTarget = bronto.backArmHighPos;
+        backElbowTarget = bronto.backElbowHighPos;
+
+        // Move arm using PID (Two Stage)
         while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
             bronto.backArmComponent.moveUsingPID(backArmTarget);
         }
-
         while(!bronto.backButton.isPressed()) {
             backArmTarget -= 20;
             bronto.backArmComponent.moveUsingPID(backArmTarget);
         }
 
-        // Move elbow using PID & Distance Sensors
+        while(!gamepad1.a) {
+            sleep(1);
+        }
+
+        // Move elbows (Two Stage)
         double distAvg = bronto.backHighDist;
         double [] distances = new double[3];
 
         while(!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)) {
             bronto.backElbowComponent.moveUsingPID(backElbowTarget);
         }
-
         while(!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
                 && !bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
@@ -104,7 +107,7 @@ public class autonRight extends LinearOpMode {
             }
         }
 
-        // Run Intake to Deliver Cone
+        // Run Intake to Deliver Cone while holding elbows
         while(bronto.returnColor(bronto.backIntakeSensor) != "unknown") {
             bronto.backIntakeL.setPower(-1);
             bronto.backIntakeR.setPower(-1);
@@ -128,46 +131,27 @@ public class autonRight extends LinearOpMode {
         bronto.backIntakeL.setPower(0);
         bronto.backIntakeR.setPower(0);
 
-        // TODO: Move arms to drive pos
-
-        // Drive to parking location based off of CV from earlier
-        bronto.drive.followTrajectory(TC.RIGHT_forwardToPark(bronto.drive, newPos));
-        newPos = TC.RIGHT_forwardToPark(bronto.drive, newPos).end();
-        if(bronto.parkingZone == 1) {
-            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
-        } else if(bronto.parkingZone == 2) {
-            bronto.drive.followTrajectory(TC.RIGHT_parkingZone2(bronto.drive, newPos));
-            newPos = TC.RIGHT_parkingZone2(bronto.drive, newPos).end();
-        } else if(bronto.parkingZone == 3) {
-            bronto.drive.followTrajectory(TC.RIGHT_parkingZone3(bronto.drive, newPos));
-            newPos = TC.RIGHT_parkingZone3(bronto.drive, newPos).end();
-        } else {
-            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
-        }
-
-        // Set Arm Targets to restPos
-        backArmTarget = bronto.backArmRestPos;
-        backElbowTarget = bronto.backElbowRestPos;
-        frontArmTarget = bronto.frontArmRestPos;
-        frontElbowTarget = bronto.frontElbowRestPos;
-
-        // Move arms using PID
-        while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)
-                && !bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
-                && !bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
-                && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20)) {
-            bronto.backArmComponent.moveUsingPID(backArmTarget);
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontArmComponent.moveUsingPID(frontArmTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
-        }
-
-        // Stop all motors
-        bronto.frontArm.setPower(0);
-        bronto.frontElbow.setPower(0);
-        bronto.backArm.setPower(0);
-        bronto.backElbow.setPower(0);
+//        // Set targets
+//        backArmTarget = bronto.backArmRestPos;
+//        backElbowTarget = bronto.backElbowRestPos;
+//        frontArmTarget = bronto.frontArmRestPos;
+//        frontElbowTarget = bronto.frontArmRestPos;
+//
+//        // Move using PID
+//        while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)
+//                && !bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
+//                && !bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
+//                && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20)) {
+//            bronto.backArmComponent.moveUsingPID(backArmTarget);
+//            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+//            bronto.frontArmComponent.moveUsingPID(frontArmTarget);
+//            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+//        }
+//
+//        // Stop all motors
+//        bronto.frontArm.setPower(0);
+//        bronto.frontElbow.setPower(0);
+//        bronto.backArm.setPower(0);
+//        bronto.backElbow.setPower(0);
     }
 }

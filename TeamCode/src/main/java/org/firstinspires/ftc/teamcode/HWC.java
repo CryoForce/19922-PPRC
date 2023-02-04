@@ -48,8 +48,11 @@ public class HWC {
 
     // Roadrunner start positions
     public final Pose2d START_POS_RIGHT = new Pose2d(35, -60, Math.toRadians(90));
+    public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90));
+
     public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90)); // TODO: Change Coords
     public final Pose2d START_POS_TELEOP = new Pose2d(0, -60, Math.toRadians(90));
+    
     // Roadrunner drive
     public SampleMecanumDrive drive;
 
@@ -81,9 +84,8 @@ public class HWC {
 
 
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
-    //BS numbers but I needed something
     int frontArmRestPos = 0;
-    int frontArmDrivePos = 200; //TODO: check
+    int frontArmDrivePos = 728;
     int frontArmIntakePos = 0; //changed to 0
     int frontArmLowPos;
     int frontArmMedPos;
@@ -91,16 +93,17 @@ public class HWC {
     int frontArmTransPos = frontArmHighPos;
 
     int frontElbowRestPos = 0;
-    int frontElbowDrivePos = -400;
+    int frontElbowDrivePos = -694;
     int frontElbowIntakePos = -204;
     int frontElbowTransPos =  524;
     int frontElbowLowPos = 942;
     int frontElbowMedPos = 1254;
     int frontElbowHighPos = 686;
+    int frontElbowAutonDrivePos = 329;
 
 
     int backArmRestPos = 0;
-    int backArmDrivePos = -200;
+    int backArmDrivePos = -906;
     int backArmIntakePos = -1325;
     int backArmLowPos = -3646;
     int backArmMedPos = -4838;
@@ -108,12 +111,13 @@ public class HWC {
     int backArmTransPos = backArmHighPos; //same
 
     int backElbowRestPos = 0;
-    int backElbowDrivePos = 400;
+    int backElbowDrivePos = 673;
     int backElbowIntakePos = 319;
     int backElbowTransPos = -417;
     int backElbowLowPos = 1679;
     int backElbowMedPos = 1365;
     int backElbowHighPos = -1050;
+    int backElbowAutonDrivePos = -366;
 
     int backHighDist = 93;
     int frontIntakeDist = 10;

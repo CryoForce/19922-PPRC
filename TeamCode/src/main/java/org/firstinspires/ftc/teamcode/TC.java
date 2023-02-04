@@ -77,6 +77,11 @@ public class TC {
                 .build();
     }
 
+    public static Trajectory forward(SampleMecanumDrive drive, Pose2d pos, int distance) {
+        return drive.trajectoryBuilder(pos)
+                .forward(distance)
+                .build();
+                
     public static Trajectory TeleOp_To_Pole(SampleMecanumDrive drive, Pose2d pos){
         return drive.trajectoryBuilder(pos)
                 .forward(5)
