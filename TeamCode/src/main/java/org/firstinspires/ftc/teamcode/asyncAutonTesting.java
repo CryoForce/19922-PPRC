@@ -68,18 +68,18 @@ public class asyncAutonTesting extends LinearOpMode {
         }
 
         // ------------------- STRAFE TO PARKING ZONE ------------------- //
-        if (bronto.parkingZone == 1) {
+        if (bronto.parkingZone == 3) {
             bronto.drive.followTrajectoryAsync(TC.LEFT_parkingZone1(bronto.drive, newPos));
             newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
         } else if (bronto.parkingZone == 2) {
             bronto.drive.followTrajectory((TC.LEFT_parkingZone2(bronto.drive, newPos)));
             newPos = TC.LEFT_parkingZone2(bronto.drive, newPos).end();
-        } else if (bronto.parkingZone == 3) {
+        } else if (bronto.parkingZone == 1) {
             bronto.drive.followTrajectory(TC.LEFT_parkingZone3(bronto.drive, newPos));
             newPos = TC.LEFT_parkingZone3(bronto.drive, newPos).end();
         } else {
-            bronto.drive.followTrajectory(TC.LEFT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory(TC.LEFT_parkingZone3(bronto.drive, newPos));
+            newPos = TC.LEFT_parkingZone3(bronto.drive, newPos).end();
         }
 
         bronto.drive.update();
