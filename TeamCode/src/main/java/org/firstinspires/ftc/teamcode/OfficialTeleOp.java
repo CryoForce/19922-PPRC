@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@Disabled
 @TeleOp(name="19922-Official TeleOp", group="Iterative Opmode")
 
 public class OfficialTeleOp extends OpMode
@@ -45,7 +44,7 @@ public class OfficialTeleOp extends OpMode
         bronto.leftFront.setDirection(DcMotorEx.Direction.FORWARD);
         bronto.leftRear.setDirection(DcMotorEx.Direction.REVERSE);
         bronto.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        bronto.rightRear.setDirection(DcMotorEx.Direction.REVERSE);
+        bronto.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         bronto.frontElbow.setTargetPosition(0);
         bronto.frontArm.setTargetPosition(0);
         bronto.backElbow.setTargetPosition(0);
@@ -111,7 +110,7 @@ public class OfficialTeleOp extends OpMode
         else{
             frontArmPow = 0;}
 
-        if (backArmUp > 1) {
+        if (backArmUp != 0) {
             bronto.backArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             backArmPow = backArmUp;
         } else if (backArmDown != 0) {
@@ -278,7 +277,6 @@ public class OfficialTeleOp extends OpMode
                 telemetry.addData("Arm Position", "Unknown");
 
         }
-
 
         bronto.leftFront.setPower(leftFPower);
         bronto.leftRear.setPower(leftBPower);

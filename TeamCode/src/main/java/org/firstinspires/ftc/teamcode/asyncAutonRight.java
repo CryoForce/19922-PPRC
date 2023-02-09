@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous
-public class asyncAutonLeft extends LinearOpMode {
+public class asyncAutonRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Tell driver bronto is initializing
@@ -19,7 +16,6 @@ public class asyncAutonLeft extends LinearOpMode {
         // Run any initialization code necessary
         HWC bronto = new HWC(hardwareMap, telemetry);
         BrontoBrain brain = new BrontoBrain(bronto);
-        ElapsedTime runtime = new ElapsedTime();
 
         // Tell driver bronto is ready and waiting for start
         telemetry.addData("Status", "Initialized - Waiting for Start");
@@ -53,8 +49,8 @@ public class asyncAutonLeft extends LinearOpMode {
 
         // ----------------------------- STRAFE LEFT ----------------------------- //
         // Set Trajectory
-        bronto.drive.followTrajectoryAsync(TC.LEFT_deliverPreloadRight(bronto.drive, newPos));
-        newPos = TC.LEFT_deliverPreloadRight(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_deliverPreloadLeft(bronto.drive, newPos));
+        newPos = TC.RIGHT_deliverPreloadLeft(bronto.drive, newPos).end();
 
         // Move while holding Elbows out
         bronto.drive.update();
@@ -66,8 +62,8 @@ public class asyncAutonLeft extends LinearOpMode {
 
         // ----------------------------- FORWARD TO DELIVER ----------------------------- //
         // Set Trajectory
-        bronto.drive.followTrajectoryAsync(TC.LEFT_deliverPreloadForward(bronto.drive, newPos));
-        newPos = TC.LEFT_deliverPreloadForward(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_deliverPreloadForward(bronto.drive, newPos));
+        newPos = TC.RIGHT_deliverPreloadForward(bronto.drive, newPos).end();
 
         // Move while holding Elbows out
         bronto.drive.update();
@@ -107,28 +103,14 @@ public class asyncAutonLeft extends LinearOpMode {
         }
         bronto.backArm.setPower(0);
 
-        // ------------ DRIVE FORWARD AGAIN ------------ //
-        bronto.drive.followTrajectoryAsync(TC.forward(bronto.drive, newPos, 2));
-        newPos = TC.forward(bronto.drive, newPos, 2).end();
-
-        bronto.drive.update();
-        while(bronto.drive.isBusy()) {
-            bronto.drive.update();
-        }
         // ------------ ELBOW MOVE ------------ //
         // Move elbows (Two Stage)
         double distAvg = bronto.backHighDist;
         double[] distances = new double[3];
 
-        runtime.reset();
         while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)) {
-            if(runtime.milliseconds() > 5000) {
-                break;
-            }
-
             bronto.backElbowComponent.moveUsingPID(backElbowTarget);
         }
-        runtime.reset();
         while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
                 && !bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
@@ -145,12 +127,8 @@ public class asyncAutonLeft extends LinearOpMode {
             } else {
                 distances[2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             }
-            if(runtime.milliseconds() > 5000) {
-                break;
-            }
         }
 
-        runtime.reset();
         // Run Intake to Deliver Cone while holding elbows
         while (bronto.returnColor(bronto.backIntakeSensor) != "unknown") {
             bronto.backIntakeL.setPower(-1);
@@ -169,10 +147,6 @@ public class asyncAutonLeft extends LinearOpMode {
             } else {
                 distances[2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             }
-
-            if(runtime.milliseconds() > 5000) {
-                break;
-            }
         }
 
         // Stop Intake
@@ -181,8 +155,8 @@ public class asyncAutonLeft extends LinearOpMode {
 
         // ----------------------------- PARKING USING CV VALUE ----------------------------- //
         // Set Trajectory to follow (forward to park)
-        bronto.drive.followTrajectoryAsync(TC.LEFT_forwardToPark(bronto.drive, newPos));
-        newPos = TC.LEFT_forwardToPark(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_forwardToPark(bronto.drive, newPos));
+        newPos = TC.RIGHT_forwardToPark(bronto.drive, newPos).end();
 
         // Hold frontElbow at driving pos and follow trajectory
         bronto.drive.update();
@@ -193,17 +167,17 @@ public class asyncAutonLeft extends LinearOpMode {
 
         // Check Parking zone and set trajectory to follow
         if(bronto.parkingZone == 1) {
-            bronto.drive.followTrajectoryAsync(TC.LEFT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
+            bronto.drive.followTrajectoryAsync(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
         } else if (bronto.parkingZone == 2) {
-            bronto.drive.followTrajectory((TC.LEFT_parkingZone2(bronto.drive, newPos)));
-            newPos = TC.LEFT_parkingZone2(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory((TC.RIGHT_parkingZone2(bronto.drive, newPos)));
+            newPos = TC.RIGHT_parkingZone2(bronto.drive, newPos).end();
         } else if (bronto.parkingZone == 3) {
-            bronto.drive.followTrajectory(TC.LEFT_parkingZone3(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone3(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone3(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone3(bronto.drive, newPos).end();
         } else {
-            bronto.drive.followTrajectory(TC.LEFT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
         }
 
         bronto.drive.update();

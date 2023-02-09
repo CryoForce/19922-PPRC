@@ -14,7 +14,7 @@ public class TC {
     }
     public static Trajectory RIGHT_deliverPreloadForward(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .forward(13)
+                .forward(11)
                 .build();
     }
     //parking zone trajectory code 1-3
@@ -46,7 +46,7 @@ public class TC {
     }
     public static Trajectory LEFT_deliverPreloadForward(SampleMecanumDrive drive, Pose2d pos) {
         return drive.trajectoryBuilder(pos)
-                .forward(13)
+                .forward(11)
                 .build();
     }
     //parking zone trajectory code 1-3

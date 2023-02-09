@@ -37,7 +37,7 @@ public class BrontoTeleOP extends OpMode
     int frontArmTarget = 0;
     int backArmTarget = 0;
     int frontElbowTarget = 0;
-    int backElbowTarget = bronto.backElbowHighPos;
+    int backElbowTarget = 0;
     int autoCycle = -1;
 
     double [] distances = new double [3];
@@ -64,7 +64,7 @@ public class BrontoTeleOP extends OpMode
         bronto.rightFront.setDirection(DcMotorEx.Direction.REVERSE);
         bronto.rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
-        backArmTarget = bronto.backArmHighPos; //set back arm to back high pole immediately for power draw issues
+        //set back arm to back high pole immediately for power draw issues
 
         telemetry.addData("Status", "Initialized");
 
@@ -121,6 +121,10 @@ public class BrontoTeleOP extends OpMode
             autoCycle--;
         }
 
+        if (gamepad1.a){ backArmTarget = bronto.backArmHighPos;
+        state = TeleOpStates.MOVING;
+        nextState = TeleOpStates.RESTING;}
+
         switch (autoCycle) {
             case 3: // Moves to intake
                 bronto.drive.followTrajectory(TC.forward(bronto.drive, bronto.START_POS_TELEOP, 5));
@@ -160,11 +164,11 @@ public class BrontoTeleOP extends OpMode
 
         }
 
-        if (gamepad2.right_trigger != 0) { outtakePow = gamepad2.right_trigger;}
-        else if (gamepad2.right_bumper == true) {outtakePow = -1;}
+        if (gamepad2.right_trigger != 0) { outtakePow = -gamepad2.right_trigger;}
+        else if (gamepad2.right_bumper == true) {outtakePow = 1;}
         else {outtakePow = 0;}
 
-        if (gamepad2.left_trigger != 0) { intakePow = gamepad2.left_trigger;}
+                                                if (gamepad2.left_trigger != 0) { intakePow = gamepad2.left_trigger;}
         else if (gamepad2.left_bumper == true) {intakePow = -1;}
         else {intakePow = 0;}
 
