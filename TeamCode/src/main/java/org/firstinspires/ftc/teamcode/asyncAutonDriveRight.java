@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous
-public class asyncAutonTesting extends LinearOpMode {
+public class asyncAutonDriveRight extends LinearOpMode {
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Tell driver bronto is initializing
@@ -41,8 +40,8 @@ public class asyncAutonTesting extends LinearOpMode {
         telemetry.update();
 
         // ------------------- STRAFE RIGHT ------------------- //
-        bronto.drive.followTrajectoryAsync(TC.LEFT_deliverPreloadRight(bronto.drive, newPos));
-        newPos = TC.LEFT_deliverPreloadRight(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_deliverPreloadLeft(bronto.drive, newPos));
+        newPos = TC.RIGHT_deliverPreloadLeft(bronto.drive, newPos).end();
 
         bronto.drive.update();
         while (bronto.drive.isBusy()) {
@@ -50,8 +49,8 @@ public class asyncAutonTesting extends LinearOpMode {
         }
 
         // ------------------- DRIVE FORWARD ------------------- //
-        bronto.drive.followTrajectoryAsync(TC.LEFT_deliverPreloadForward(bronto.drive, newPos));
-        newPos = TC.LEFT_deliverPreloadForward(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_deliverPreloadForward(bronto.drive, newPos));
+        newPos = TC.RIGHT_deliverPreloadForward(bronto.drive, newPos).end();
 
         bronto.drive.update();
         while (bronto.drive.isBusy()) {
@@ -59,8 +58,8 @@ public class asyncAutonTesting extends LinearOpMode {
         }
 
         // ------------------- FORWARD TO PARK ------------------- //
-        bronto.drive.followTrajectoryAsync(TC.LEFT_forwardToPark(bronto.drive, newPos));
-        newPos = TC.LEFT_forwardToPark(bronto.drive, newPos).end();
+        bronto.drive.followTrajectoryAsync(TC.RIGHT_forwardToPark(bronto.drive, newPos));
+        newPos = TC.RIGHT_forwardToPark(bronto.drive, newPos).end();
 
         bronto.drive.update();
         while (bronto.drive.isBusy()) {
@@ -68,18 +67,18 @@ public class asyncAutonTesting extends LinearOpMode {
         }
 
         // ------------------- STRAFE TO PARKING ZONE ------------------- //
-        if (bronto.parkingZone == 3) {
-            bronto.drive.followTrajectoryAsync(TC.LEFT_parkingZone1(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone1(bronto.drive, newPos).end();
+        if (bronto.parkingZone == 1) {
+            bronto.drive.followTrajectoryAsync(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
         } else if (bronto.parkingZone == 2) {
-            bronto.drive.followTrajectory((TC.LEFT_parkingZone2(bronto.drive, newPos)));
-            newPos = TC.LEFT_parkingZone2(bronto.drive, newPos).end();
-        } else if (bronto.parkingZone == 1) {
-            bronto.drive.followTrajectory(TC.LEFT_parkingZone3(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone3(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory((TC.RIGHT_parkingZone2(bronto.drive, newPos)));
+            newPos = TC.RIGHT_parkingZone2(bronto.drive, newPos).end();
+        } else if (bronto.parkingZone == 3) {
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone3(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone3(bronto.drive, newPos).end();
         } else {
-            bronto.drive.followTrajectory(TC.LEFT_parkingZone3(bronto.drive, newPos));
-            newPos = TC.LEFT_parkingZone3(bronto.drive, newPos).end();
+            bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
+            newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
         }
 
         bronto.drive.update();
