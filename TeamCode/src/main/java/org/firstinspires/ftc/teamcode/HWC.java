@@ -48,8 +48,6 @@ public class HWC {
     // Roadrunner start positions
     public final Pose2d START_POS_RIGHT = new Pose2d(35, -60, Math.toRadians(90));
     public final Pose2d START_POS_LEFT = new Pose2d(35, -60, Math.toRadians(90));
-
-    // TODO: Change Coords
     public final Pose2d START_POS_TELEOP = new Pose2d(0, -60, Math.toRadians(90));
     
     // Roadrunner drive
@@ -70,6 +68,13 @@ public class HWC {
         PARKING_VALUE
     }
 
+    public enum START_POSITION {
+        BLUE_LEFT,
+        BLUE_RIGHT,
+        RED_LEFT,
+        RED_RIGHT
+    }
+
     // armPositions Enum
     public enum armPositions {
         RESTING,
@@ -80,7 +85,6 @@ public class HWC {
         TRANSFER,
         UNKNOWN
     }
-
 
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
     int frontArmRestPos = 0;
