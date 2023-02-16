@@ -70,8 +70,8 @@ public class revisedTeleOp extends OpMode {
     double outtakePwr = 0;
 
     //initialzie Arm values are close and elbow is on
-    boolean frontArmIsClose = false;
-    boolean backArmIsClose = false;
+    boolean frontArmOn = false;
+    boolean backArmOn = false;
     boolean frontElbowOn = false;
     boolean backElbowOn = false;
 
@@ -118,29 +118,73 @@ public class revisedTeleOp extends OpMode {
         turn = gamepad1.left_stick_x * .6;
         strafe = -gamepad1.right_stick_x * .8;
 
-        //turn on elbows, only turned off in certain states
+        //turn on elbows and arms, only turned off in certain states
         frontElbowOn = true;
-        backElbowOn = false;
+        backElbowOn = true;
+        frontArmOn = true;
+        frontArmOn = true;
 
         switch (frontState) {
             case MTI:
                 telemetry.addData("Front Arm State: ", "MTI");
-                if (frontArmTarget < Math.abs(bronto.frontArmComponent.armTicksUsingAngle(0))) {
-                    frontElbowOn = true;
-                    if (frontArmTarget < Math.abs(bronto.frontArmComponent.armTicksUsingAngle(-30))
-                            && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 100)) {
-                        frontArmIsClose = true;
-                    } else {
-                        frontArmIsClose = false;
-                    }
+                frontElbowOn = bronto.turnElbowOnGoingDown(frontArmTarget, bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                    frontArmOn = false;
+                } else {
+                    frontArmOn = bronto.turnArmOnGoingDown(frontArmTarget, frontElbowTarget,
+                            bronto.frontArmComponent, bronto.frontElbowComponent);
                 }
+
+                break;
+            case MTR:
+                telemetry.addData("Front Arm State: ", "MTR");
+                frontElbowOn = bronto.turnElbowOnGoingDown(frontArmTarget, bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
+                        && bronto.frontButton.isPressed()) {
+                    frontArmOn = false;
+                } else {
+                    frontArmOn = bronto.turnArmOnGoingDown(frontArmTarget, frontElbowTarget,
+                            bronto.frontArmComponent, bronto.frontElbowComponent);
+                }
+                break;
+
+            case MTD:
+                break;
+
+            case MTG:
+                break;
+
+            case MTH:
+                break;
+
+            case MTL:
+                break;
+
+            case MTM:
+                break;
+
+            case MTT:
+                break;
+
             case Rest:
                 telemetry.addData("Front Arm State: ", "Rest");
                 break;
+
             case Drive:
                 telemetry.addData("Front Arm State: ", "Drive");
                 break;
-            case Intake:
+
+            case Transfer:
+                break;
+
+            case Delivery:
+                break;
+
+            case Unknown:
+                break;
+
+            default:
+                backState = BackStates.Unknown;
                 break;
         }
 

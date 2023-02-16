@@ -238,6 +238,19 @@ public class HWC {
         return false;
     }
 
+    public boolean turnElbowOnGoingDown (int target, RobotComponents armComponent) {
+        if (target < Math.abs(armComponent.armTicksUsingAngle(0))) {
+            return true;
+        } return false;
+    }
+    public boolean turnArmOnGoingDown (int armTarget, int elbowTarget, RobotComponents armComponent, RobotComponents elbowComponent) {
+        if (armTarget < Math.abs(armComponent.armTicksUsingAngle(-30))
+                && !elbowComponent.motorCloseEnough(elbowTarget, 100)) {
+            return false;
+        }
+        return true;
+    }
+
     // Function to run intake set of servos to intake a cone/transfer to other arm
     public void runIntakeServo(char servo, double power) {
         if (servo == 'F') {

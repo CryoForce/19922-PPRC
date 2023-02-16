@@ -7,11 +7,11 @@ public class RobotComponents {
 
     private final DcMotorEx motor;
     private final double ticks_in_degrees;
-    public final double ticks_per_degree;
+    private final double ticks_per_degree;
     private final double F;
     private final PIDController controller;
-    public final double armLength = 38.4; //cm, random atm TODO: check arm lengths
-    public final double elbowLength = 19.2; //cm
+    private final double armLength = 38.4; //cm, random atm TODO: check arm lengths
+    private final double elbowLength = 19.2; //cm
 
     RobotComponents (DcMotorEx motor, double ticks_in_degrees, double p, double i, double d, double f) {
         this.motor = motor;
@@ -21,6 +21,10 @@ public class RobotComponents {
 
         controller = new PIDController (p,i,d);
     }
+
+    public double getTicksPerDegree () {return ticks_per_degree;}
+    public double getArmLength () {return armLength;}
+    public double getElbowLength() {return elbowLength;}
 
     public void moveUsingPID (int target) {
 

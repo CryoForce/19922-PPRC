@@ -56,10 +56,10 @@ public class BrontoTeleOPCoords extends OpMode
         bronto.backElbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bronto.backArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        frontX = bronto.frontElbowComponent.elbowLength; //instance doesnt actually matter
-        frontY = - bronto.frontArmComponent.armLength;
-        backX = bronto.backElbowComponent.elbowLength; //instance doesnt actually matter
-        backY = - bronto.backArmComponent.armLength;
+        frontX = bronto.frontElbowComponent.getElbowLength(); //instance doesnt actually matter
+        frontY = - bronto.frontArmComponent.getArmLength();
+        backX = bronto.backElbowComponent.getElbowLength(); //instance doesnt actually matter
+        backY = - bronto.backArmComponent.getArmLength();
 
         //backArmTarget = bronto.backArmHighPos; //set back arm to back high pole immediately for power draw issues
 
@@ -146,7 +146,7 @@ public class BrontoTeleOPCoords extends OpMode
         }
 
         if (gamepad2.y) {
-            frontX = bronto.frontArmComponent.armLength + bronto.frontElbowComponent.elbowLength;
+            frontX = bronto.frontArmComponent.getArmLength() + bronto.frontElbowComponent.getElbowLength();
             frontY = 0;
         }
 
@@ -258,16 +258,16 @@ public class BrontoTeleOPCoords extends OpMode
         frontArmTarget = (int)bronto.frontArmComponent.armTicksUsingAngle(frontArmAngle);
         frontElbowTarget = (int)(bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY)
                 - ((frontArmAngle + 90) //add 90 to get relative angle
-                * bronto.frontElbowComponent.ticks_per_degree)); //same as below
+                * bronto.frontElbowComponent.getTicksPerDegree())); //same as below
         backArmTarget = (int)bronto.backArmComponent.armTicksUsingAngle(backArmAngle);
         backElbowTarget = (int)(bronto.backElbowComponent.elbowTicksUsingCoords(backX, backY)
                 - ((backArmAngle + 90) //add 90 to get relative angle
-                * bronto.backElbowComponent.ticks_per_degree)); //im not sure what needs to be added here but something has to account for arm position/angle
+                * bronto.backElbowComponent.getTicksPerDegree())); //im not sure what needs to be added here but something has to account for arm position/angle
 
         telemetry.addData("Front Elbow Ticks",bronto.frontElbowComponent.elbowTicksUsingCoords(frontX, frontY) );
         telemetry.addData("Front Arm Angle", frontArmAngle +90);
         telemetry.addData("Front Elbow Ticks per Degree * Arm Angle",
-                (frontArmAngle +90) * bronto.frontElbowComponent.ticks_per_degree);
+                (frontArmAngle +90) * bronto.frontElbowComponent.getTicksPerDegree());
         /*if arm motors are close enough, set to 0 b/c power draw and worm gear already holds it
         now also checking if buttons are pressed,
         ok this is an OR that will set power to 0 if position is close enough OR
