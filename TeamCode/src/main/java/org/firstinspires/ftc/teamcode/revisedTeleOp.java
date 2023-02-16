@@ -113,7 +113,7 @@ public class revisedTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        //robot too fast and jack bad at driving
+        //robot too fast and Omar bad at driving
         drive = -gamepad1.left_stick_y *.8;
         turn = gamepad1.left_stick_x * .6;
         strafe = -gamepad1.right_stick_x * .8;
@@ -144,7 +144,58 @@ public class revisedTeleOp extends OpMode {
                 break;
         }
 
+
+        switch (backState) {
+            case MTI:
+                break;
+
+            case MTR:
+                break;
+
+            case MTD:
+                break;
+
+            case MTG:
+                break;
+
+            case MTH:
+                break;
+
+            case MTL:
+                break;
+
+            case MTM:
+                break;
+
+            case MTT:
+                break;
+
+            case Rest:
+                break;
+
+            case Drive:
+                break;
+
+            case Transfer:
+                break;
+
+            case Delivery:
+                break;
+
+            case Unknown:
+                break;
+
+            default:
+                backState = BackStates.Unknown;
+                break;
+
+
+
+
+        }
+
     }
+
 
 
 
