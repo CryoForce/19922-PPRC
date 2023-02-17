@@ -43,14 +43,34 @@ public class SideStates {
         Unknown
     }
 
-    public SideStates (DcMotorEx initArmMotor, DcMotorEx initElbowMotor, RobotComponents initArmComponent,
-                       RobotComponents initElbowComponent, TouchSensor initButton, CRServo initIntakeL,
-                       CRServo initIntakeR, DistanceSensor initDistanceSensor, ColorSensor initIntakeSensor,
-                       HWC initBronto, int initArmRestPos, int initArmDrivePos, int initArmIntakePos,
-                       int initArmGndPos, int initArmLowPos, int initArmMedPos, int initArmHighPos,
-                       int initArmTransPos, int initArmMaxPos, int initElbowRestPos, int initElbowDrivePos,
-                       int initElbowAutonDrivePos, int initElbowIntakePos, int initElbowGndPos,
-                       int initElbowLowPos, int initElbowMedPos, int initElbowHighPos, int initElbowTransPos) {
+    public SideStates (HWC initBronto, 
+                       DcMotorEx initArmMotor, 
+                       DcMotorEx initElbowMotor, 
+                       RobotComponents initArmComponent,
+                       RobotComponents initElbowComponent, 
+                       TouchSensor initButton, 
+                       CRServo initIntakeL,
+                       CRServo initIntakeR, 
+                       DistanceSensor initDistanceSensor, 
+                       ColorSensor initIntakeSensor,
+                       int initArmRestPos, 
+                       int initArmDrivePos, 
+                       int initArmIntakePos,
+                       int initArmGndPos, 
+                       int initArmLowPos, 
+                       int initArmMedPos, 
+                       int initArmHighPos,
+                       int initArmTransPos, 
+                       int initArmMaxPos, 
+                       int initElbowRestPos, 
+                       int initElbowDrivePos,
+                       int initElbowAutonDrivePos, 
+                       int initElbowIntakePos,
+                       int initElbowGndPos,
+                       int initElbowLowPos, 
+                       int initElbowMedPos, 
+                       int initElbowHighPos, 
+                       int initElbowTransPos) {
         armComponent = initArmComponent;
         elbowComponent = initElbowComponent;
         button = initButton;
@@ -229,5 +249,13 @@ public class SideStates {
         else {armComponent.moveUsingPID();}
         if (!elbowOn) {elbowMotor.setPower(0);}
         else {elbowComponent.moveUsingPID();}
+    }
+
+    public boolean getCompletionStatus () {
+        return stateComplete;
+    }
+
+    public String returnColor() {
+        return bronto.returnColor(intakeSensor);
     }
 }
