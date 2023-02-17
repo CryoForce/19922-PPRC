@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive.getVelocityConstraint;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
+@Autonomous
 public class stateFinalAuton extends LinearOpMode {
     public static HWC.START_POSITION startPosition;
     HWC bronto;
@@ -139,22 +141,22 @@ public class stateFinalAuton extends LinearOpMode {
                 })
                 //Uncomment following line to stop reduction in speed. And move to the position after which you want to stop reducing speed.
                 //.resetVelConstraint()
-                .lineToLinearHeading(pickConePose)
-                .addDisplacementMarker(() -> {
-                    pickCone(1); //Pick top cone from stack
-                })
-                .lineToLinearHeading(dropConePose1)
-                .addDisplacementMarker(() -> {
-                    dropCone(1); //Drop cone on junction
-                })
-                .lineToLinearHeading(pickConePose)
-                .addDisplacementMarker(() -> {
-                    pickCone(2); //Pick second cone from stack
-                })
-                .lineToLinearHeading(dropConePose2)
-                .addDisplacementMarker(() -> {
-                    dropCone(2); //Drop cone on junction
-                })
+//                .lineToLinearHeading(pickConePose)
+//                .addDisplacementMarker(() -> {
+//                    pickCone(1); //Pick top cone from stack
+//                })
+//                .lineToLinearHeading(dropConePose1)
+//                .addDisplacementMarker(() -> {
+//                    dropCone(1); //Drop cone on junction
+//                })
+//                .lineToLinearHeading(pickConePose)
+//                .addDisplacementMarker(() -> {
+//                    pickCone(2); //Pick second cone from stack
+//                })
+//                .lineToLinearHeading(dropConePose2)
+//                .addDisplacementMarker(() -> {
+//                    dropCone(2); //Drop cone on junction
+//                })
                 .build();
     }
 
