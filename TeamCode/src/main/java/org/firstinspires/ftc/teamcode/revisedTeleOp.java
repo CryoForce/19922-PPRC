@@ -27,6 +27,8 @@ public class revisedTeleOp extends OpMode {
         Intake,
         Transfer,
         Delivery,
+        Pause,
+        Unpause,
         Unknown
     }
     public enum BackStates {
@@ -43,6 +45,8 @@ public class revisedTeleOp extends OpMode {
         Intake,
         Transfer,
         Delivery,
+        Pause,
+        Unpause,
         Unknown
     }
 
@@ -53,6 +57,10 @@ public class revisedTeleOp extends OpMode {
     int backArmTarget = 0;
     int frontElbowTarget = 0;
     int backElbowTarget = 0;
+
+    //initialize closeEnough Range values
+    int armCloseRange = 50;
+    int elbowCloseRangeCont = 20;
 
     //initialize motor powers
     double leftFPwr;
@@ -75,6 +83,7 @@ public class revisedTeleOp extends OpMode {
     boolean frontElbowOn = false;
     boolean backElbowOn = false;
 
+    //initialize averaged distances arrays
     double [] frontDistances = new double [3];
     double [] backDistances = new double [3];
 
@@ -118,52 +127,92 @@ public class revisedTeleOp extends OpMode {
         turn = gamepad1.left_stick_x * .6;
         strafe = -gamepad1.right_stick_x * .8;
 
-        //turn on elbows and arms, only turned off in certain states
+        //turn on elbows, only turned off in certain states
         frontElbowOn = true;
         backElbowOn = true;
-        frontArmOn = true;
-        frontArmOn = true;
 
         switch (frontState) {
             case MTI:
                 telemetry.addData("Front Arm State: ", "MTI");
-                frontElbowOn = bronto.turnElbowOnGoingDown(frontArmTarget, bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
                     frontArmOn = false;
+                    frontState = FrontStates.Intake;
                 } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(frontArmTarget, frontElbowTarget,
-                            bronto.frontArmComponent, bronto.frontElbowComponent);
+                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
+                            bronto.frontElbowComponent);
                 }
 
                 break;
             case MTR:
                 telemetry.addData("Front Arm State: ", "MTR");
-                frontElbowOn = bronto.turnElbowOnGoingDown(frontArmTarget, bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
+                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)
                         && bronto.frontButton.isPressed()) {
                     frontArmOn = false;
+                    frontState = FrontStates.Rest;
                 } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(frontArmTarget, frontElbowTarget,
-                            bronto.frontArmComponent, bronto.frontElbowComponent);
+                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
+                            bronto.frontElbowComponent);
                 }
                 break;
 
             case MTD:
+                telemetry.addData("Front Arm State: ", "MTD");
+                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
+                    frontArmOn = false;
+                    frontState = FrontStates.Drive;
+                } else {
+                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
+                            bronto.frontElbowComponent);
+                }
                 break;
 
             case MTG:
+                telemetry.addData("Front Arm State: ", "MTG");
+                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)
+                        && bronto.frontButton.isPressed()) {
+                    frontArmOn = false;
+                    frontState = FrontStates.Delivery;
+                } else {
+                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
+                            bronto.frontElbowComponent);
+                }
                 break;
 
             case MTH:
+                telemetry.addData("Front Arm State: ", "MTH");
+                frontElbowOn = bronto.turnElbowOnGoingUp(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
+                    if (bronto.frontButton.isPressed()) {
+                        frontArmOn = false;
+                        frontState = FrontStates.Delivery;
+                    } else {
+                        bronto.frontArmComponent.incrementTarget(-20);
+                    }
+                } else {frontArmOn = true;}
                 break;
 
             case MTL:
+
                 break;
 
             case MTM:
                 break;
 
             case MTT:
+                telemetry.addData("Front Arm State: ", "MTT");
+                frontElbowOn = bronto.turnElbowOnGoingUp(bronto.frontArmComponent);
+                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
+                    if (bronto.frontButton.isPressed()) {
+                        frontArmOn = true;
+                        frontState = FrontStates.Transfer;
+                    } else if() {
+                        bronto.frontArmComponent.incrementTarget(-20);
+                    }
+                } else {frontArmOn = true;}
                 break;
 
             case Rest:
@@ -175,6 +224,7 @@ public class revisedTeleOp extends OpMode {
                 break;
 
             case Transfer:
+                telemetry.addData("Front Arm State: ", "Transfer");
                 break;
 
             case Delivery:
@@ -244,3 +294,4 @@ public class revisedTeleOp extends OpMode {
 
 
 }
+//looks good!

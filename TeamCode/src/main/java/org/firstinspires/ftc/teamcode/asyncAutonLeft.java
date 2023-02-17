@@ -60,8 +60,8 @@ public class asyncAutonLeft extends LinearOpMode {
         bronto.drive.update();
         while(bronto.drive.isBusy()) {
             bronto.drive.update();
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+            bronto.backElbowComponent.moveUsingPID();
+            bronto.frontElbowComponent.moveUsingPID();
         }
 
         // ----------------------------- FORWARD TO DELIVER ----------------------------- //
@@ -73,8 +73,8 @@ public class asyncAutonLeft extends LinearOpMode {
         bronto.drive.update();
         while(bronto.drive.isBusy()) {
             bronto.drive.update();
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+            bronto.backElbowComponent.moveUsingPID();
+            bronto.frontElbowComponent.moveUsingPID();
         }
 
         // Flop out elbows
@@ -102,8 +102,8 @@ public class asyncAutonLeft extends LinearOpMode {
         backElbowTarget = bronto.backElbowHighPos;
 
         // Move arm using PID (Two Stage)
-        while (!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
-            bronto.backArmComponent.moveUsingPID(backArmTarget);
+        while (!bronto.backArmComponent.motorCloseEnough(20)) {
+            bronto.backArmComponent.moveUsingPID();
         }
         bronto.backArm.setPower(0);
 
@@ -121,18 +121,18 @@ public class asyncAutonLeft extends LinearOpMode {
         double[] distances = new double[3];
 
         runtime.reset();
-        while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)) {
+        while (!bronto.backElbowComponent.motorCloseEnough(20)) {
             if(runtime.milliseconds() > 5000) {
                 break;
             }
 
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+            bronto.backElbowComponent.moveUsingPID();
         }
         runtime.reset();
-        while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
+        while (!bronto.backElbowComponent.motorCloseEnough(20)
                 && !bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+            bronto.backElbowComponent.moveUsingPID();
             if (distances[2] != 0) {
                 distances[2] = distances[1]; //pushback old values
                 distances[1] = distances[0];
@@ -156,7 +156,7 @@ public class asyncAutonLeft extends LinearOpMode {
             bronto.backIntakeL.setPower(-1);
             bronto.backIntakeR.setPower(-1);
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+            bronto.backElbowComponent.moveUsingPID();
             if (distances[2] != 0) {
                 distances[2] = distances[1]; //pushback old values
                 distances[1] = distances[0];
@@ -188,7 +188,7 @@ public class asyncAutonLeft extends LinearOpMode {
         bronto.drive.update();
         while(bronto.drive.isBusy()) {
             bronto.drive.update();
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+            bronto.frontElbowComponent.moveUsingPID();
         }
 
         // Check Parking zone and set trajectory to follow
@@ -228,14 +228,14 @@ public class asyncAutonLeft extends LinearOpMode {
         frontElbowTarget = bronto.frontArmRestPos;
 
         // Move using PID
-        while(!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)
-                && !bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
-                && !bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)
-                && !bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20)) {
-            bronto.backArmComponent.moveUsingPID(backArmTarget);
-            bronto.backElbowComponent.moveUsingPID(backElbowTarget);
-            bronto.frontArmComponent.moveUsingPID(frontArmTarget);
-            bronto.frontElbowComponent.moveUsingPID(frontElbowTarget);
+        while(!bronto.backArmComponent.motorCloseEnough(20)
+                && !bronto.backElbowComponent.motorCloseEnough(20)
+                && !bronto.frontArmComponent.motorCloseEnough(20)
+                && !bronto.frontElbowComponent.motorCloseEnough(20)) {
+            bronto.backArmComponent.moveUsingPID();
+            bronto.backElbowComponent.moveUsingPID();
+            bronto.frontArmComponent.moveUsingPID();
+            bronto.frontElbowComponent.moveUsingPID();
         }
 
         // Stop all motors

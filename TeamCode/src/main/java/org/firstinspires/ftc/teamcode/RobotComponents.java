@@ -12,6 +12,7 @@ public class RobotComponents {
     private final PIDController controller;
     private final double armLength = 38.4; //cm, random atm TODO: check arm lengths
     private final double elbowLength = 19.2; //cm
+    private double target = 0;
 
     RobotComponents (DcMotorEx motor, double ticks_in_degrees, double p, double i, double d, double f) {
         this.motor = motor;
@@ -26,7 +27,11 @@ public class RobotComponents {
     public double getArmLength () {return armLength;}
     public double getElbowLength() {return elbowLength;}
 
-    public void moveUsingPID (int target) {
+    public double getTarget() {return target;}
+    public void setTarget(double newTarget) {target = newTarget;}
+    public void incrementTarget(double increment) {target+=increment;}
+
+    public void moveUsingPID() {
 
         controller.reset();
         motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -40,7 +45,7 @@ public class RobotComponents {
 
     }
 
-    public boolean motorCloseEnough(int target, int range) {
+    public boolean motorCloseEnough(int range) {
         if ((target - range <= motor.getCurrentPosition()) && (target + range >= motor.getCurrentPosition())) return true;
         return false;
     }

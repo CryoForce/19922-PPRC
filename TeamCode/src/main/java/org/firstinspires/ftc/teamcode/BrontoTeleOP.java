@@ -264,10 +264,10 @@ public class BrontoTeleOP extends OpMode
                 telemetry.addData("Arm State", "Resting");
 
                 //checks if closeEnough AND button pressed to set power to 0 with bool
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                if (bronto.frontArmComponent.motorCloseEnough(20) && bronto.frontButton.isPressed()) {
                     frontArmIsClose = true;
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                if (bronto.backArmComponent.motorCloseEnough(20) && bronto.backButton.isPressed()) {
                     backArmIsClose = true;
                 }
 
@@ -276,10 +276,10 @@ public class BrontoTeleOP extends OpMode
                 telemetry.addData("Arm State", "Driving");
 
                 //checks if closeEnough AND button pressed to set power to 0 with bool
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                if (bronto.frontArmComponent.motorCloseEnough(20)) {
                     frontArmIsClose = true;
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                if (bronto.backArmComponent.motorCloseEnough(20)) {
                     backArmIsClose = true;
                 }
 
@@ -311,12 +311,12 @@ public class BrontoTeleOP extends OpMode
 
                 //checks if closeEnough AND button pressed to set power to 0 with bool
                 //if only target close enough and buttong NOT pressed, increments target until buttons pressed
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                if (bronto.frontArmComponent.motorCloseEnough(20)) {
                     frontArmIsClose = true;
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                if (bronto.backArmComponent.motorCloseEnough(20) && bronto.backButton.isPressed()) {
                     backArmIsClose = true;
-                } else if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                } else if (bronto.backArmComponent.motorCloseEnough(20)) {
                     backArmTarget -= 20; //if motor is reversed, this must be +=
                 }
 
@@ -350,10 +350,10 @@ public class BrontoTeleOP extends OpMode
                 else {intakePow = -1;}
 
                 //checks if closeEnough AND button pressed to set power to 0 with bool
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                if (bronto.frontArmComponent.motorCloseEnough(20) && bronto.frontButton.isPressed()) {
                     frontArmIsClose = true;
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                if (bronto.backArmComponent.motorCloseEnough(20)) {
                     backArmIsClose = true;
                 }
 
@@ -372,8 +372,8 @@ public class BrontoTeleOP extends OpMode
                     frontArmMoving = true;
                     backArmMoving = true;
                 }
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 50) &&
-                        bronto.backArmComponent.motorCloseEnough(backArmTarget, 50)) { //putting range high because it will keep moving
+                if (bronto.frontArmComponent.motorCloseEnough(50) &&
+                        bronto.backArmComponent.motorCloseEnough(50)) { //putting range high because it will keep moving
                     state = TeleOpStates.ELBOW_MOVING;
                     nextState = TeleOpStates.UNKNOWN;
                 }
@@ -381,8 +381,8 @@ public class BrontoTeleOP extends OpMode
                 break;
             case ELBOW_MOVING:
                 telemetry.addData("Arm State", "Elbows moving");
-                if (bronto.frontElbowComponent.motorCloseEnough(frontElbowTarget, 20) &&
-                bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)){
+                if (bronto.frontElbowComponent.motorCloseEnough(20) &&
+                bronto.backElbowComponent.motorCloseEnough(20)){
                     state = nextState;
                     nextState = TeleOpStates.UNKNOWN;
                 }
@@ -401,14 +401,14 @@ public class BrontoTeleOP extends OpMode
                  */
 
                 //if motor close enough but button not pressed increment both arms
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20) && bronto.frontButton.isPressed()) {
+                if (bronto.frontArmComponent.motorCloseEnough(20) && bronto.frontButton.isPressed()) {
                     frontArmIsClose = true;
-                } else if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                } else if (bronto.frontArmComponent.motorCloseEnough(20)) {
                     frontArmTarget += 20; //if motor is reversed, this must be -=
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20) && bronto.backButton.isPressed()) {
+                if (bronto.backArmComponent.motorCloseEnough(20) && bronto.backButton.isPressed()) {
                     backArmIsClose = true;
-                } else if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                } else if (bronto.backArmComponent.motorCloseEnough(20)) {
                     backArmTarget -= 20; //if motor is reversed, this must be +=
                 }
 
@@ -429,10 +429,10 @@ public class BrontoTeleOP extends OpMode
             case UNKNOWN:
                 telemetry.addData("Arm State", "Unknown");
                 //checks if closeEnough to set power to 0 with bool
-                if (bronto.frontArmComponent.motorCloseEnough(frontArmTarget, 20)) {
+                if (bronto.frontArmComponent.motorCloseEnough(20)) {
                     frontArmIsClose = true;
                 }
-                if (bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
+                if (bronto.backArmComponent.motorCloseEnough(20)) {
                     backArmIsClose = true;
                 }
 
@@ -465,12 +465,12 @@ public class BrontoTeleOP extends OpMode
 
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (frontArmIsClose) {bronto.frontArm.setPower(0);}
-        else {bronto.frontArmComponent.moveUsingPID(frontArmTarget);}
+        else {bronto.frontArmComponent.moveUsingPID();}
         if (backArmIsClose) {bronto.backArm.setPower(0);}
-        else {bronto.backArmComponent.moveUsingPID(backArmTarget);}
+        else {bronto.backArmComponent.moveUsingPID();}
 
         if (state == TeleOpStates.MOVING || state == TeleOpStates.RESTING){bronto.frontElbow.setPower(0); bronto.backElbow.setPower(0);}
-        else {bronto.frontElbowComponent.moveUsingPID(frontElbowTarget); bronto.backElbowComponent.moveUsingPID(backElbowTarget);}
+        else {bronto.frontElbowComponent.moveUsingPID(); bronto.backElbowComponent.moveUsingPID();}
 
 
         

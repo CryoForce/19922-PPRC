@@ -74,8 +74,8 @@ public class autonArmTesting extends LinearOpMode {
             backElbowTarget = bronto.backElbowHighPos;
 
             // Move arm using PID (Two Stage)
-            while (!bronto.backArmComponent.motorCloseEnough(backArmTarget, 20)) {
-                bronto.backArmComponent.moveUsingPID(backArmTarget);
+            while (!bronto.backArmComponent.motorCloseEnough(20)) {
+                bronto.backArmComponent.moveUsingPID();
             }
             bronto.backArm.setPower(0);
 //        while(!bronto.backButton.isPressed()) {
@@ -91,13 +91,13 @@ public class autonArmTesting extends LinearOpMode {
             double distAvg = bronto.backHighDist;
             double[] distances = new double[3];
 
-            while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)) {
-                bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+            while (!bronto.backElbowComponent.motorCloseEnough(20)) {
+                bronto.backElbowComponent.moveUsingPID();
             }
-            while (!bronto.backElbowComponent.motorCloseEnough(backElbowTarget, 20)
+            while (!bronto.backElbowComponent.motorCloseEnough(20)
                     && !bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
                 backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
-                bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+                bronto.backElbowComponent.moveUsingPID();
                 if (distances[2] != 0) {
                     distances[2] = distances[1]; //pushback old values
                     distances[1] = distances[0];
@@ -117,7 +117,7 @@ public class autonArmTesting extends LinearOpMode {
                 bronto.backIntakeL.setPower(-1);
                 bronto.backIntakeR.setPower(-1);
                 backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
-                bronto.backElbowComponent.moveUsingPID(backElbowTarget);
+                bronto.backElbowComponent.moveUsingPID();
                 if (distances[2] != 0) {
                     distances[2] = distances[1]; //pushback old values
                     distances[1] = distances[0];

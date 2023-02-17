@@ -18,25 +18,25 @@ public class BrontoBrain {
 
     public void mainCycle(int cycles){
         for (int i = 0; i < cycles; i++) {
-            bronto.frontArmComponent.moveUsingPID(bronto.frontArmIntakePos);
-            bronto.frontElbowComponent.moveUsingPID(bronto.frontElbowIntakePos);
+            bronto.frontArmComponent.moveUsingPID();
+            bronto.frontElbowComponent.moveUsingPID();
             bronto.runIntakeServo('F', 1);
             timer.reset();
             while(timer.milliseconds() < 2000){
                 // no sleep functions in teleOp. Probably for the best
                 }
             bronto.runIntakeServo('F', 0);
-            bronto.frontArmComponent.moveUsingPID(bronto.frontArmTransPos);
-            bronto.backArmComponent.moveUsingPID(bronto.backArmHighPos);
-            bronto.backElbowComponent.moveUsingPID(bronto.backElbowTransPos);
-            bronto.frontElbowComponent.moveUsingPID(bronto.frontElbowTransPos);
+            bronto.frontArmComponent.moveUsingPID();
+            bronto.backArmComponent.moveUsingPID();
+            bronto.backElbowComponent.moveUsingPID();
+            bronto.frontElbowComponent.moveUsingPID();
             bronto.runIntakeServo('A', 1);
             timer.reset();
             while(timer.milliseconds() < 2000){
                 // no sleep functions in teleOp. Probably for the best
             }
             bronto.runIntakeServo('A', 0);
-            bronto.backElbowComponent.moveUsingPID(bronto.backElbowHighPos);
+            bronto.backElbowComponent.moveUsingPID();
             bronto.runIntakeServo('R', 1);
             timer.reset();
             while(timer.milliseconds() < 2000){
