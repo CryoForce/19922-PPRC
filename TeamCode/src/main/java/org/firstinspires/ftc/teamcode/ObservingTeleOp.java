@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="Revised TeleOp", group="Iterative Opmode")
-public class revisedTeleOp extends OpMode {
+@TeleOp(name="Observing TeleOp", group="Iterative Opmode")
+public class ObservingTeleOp extends OpMode {
     //Declaring outside classes
     HWC bronto;
     BrontoBrain brain;

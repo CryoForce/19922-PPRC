@@ -86,14 +86,17 @@ public class HWC {
     int frontArmRestPos = 0;
     int frontArmDrivePos = 728;
     int frontArmIntakePos = 0; //changed to 0
+    int frontArmGndPos = 0;
     int frontArmLowPos;
     int frontArmMedPos;
     int frontArmHighPos = 4942;
     int frontArmTransPos = frontArmHighPos;
+    final int FRONT_ARM_MAX_POS = 5500;
 
     int frontElbowRestPos = 0;
     int frontElbowDrivePos = -694;
     int frontElbowIntakePos = -204;
+    int frontElbowGndPos;
     int frontElbowTransPos =  524;
     int frontElbowLowPos = 942;
     int frontElbowMedPos = 1254;
@@ -104,14 +107,17 @@ public class HWC {
     int backArmRestPos = 0;
     int backArmDrivePos = -906;
     int backArmIntakePos = -1325;
+    int backArmGndPos = 0;
     int backArmLowPos = -3646;
     int backArmMedPos = -4838;
     int backArmHighPos = -5683;
     int backArmTransPos = backArmHighPos; //same
+    final int BACK_ARM_MAX_POS = -6200;
 
     int backElbowRestPos = 0;
     int backElbowDrivePos = 673;
     int backElbowIntakePos = 319;
+    int backElbowGndPos = 0;
     int backElbowTransPos = -417;
     int backElbowLowPos = 1679;
     int backElbowMedPos = 1365;
