@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.apache.commons.math3.geometry.partitioning.Side;
-
 public class Observer {
     private SideStates.States robotState;
     private SideStates frontSide;
@@ -71,7 +69,19 @@ public class Observer {
         robotState = newState;
         switch (robotState) {
             case Intake:
-                if (frontSide.getCurrentState() == )
+                if (frontSide.getCurrentState() == SideStates.States.MTI) {
+                    frontSide.setArmState(SideStates.States.MTI);
+                    if (frontSide.getReadinessStatus()) {
+                        backSide.setArmState(SideStates.States.MTT);
+                    }
+                } else if (frontSide.getCurrentState() == SideStates.States.Intake){
+                    frontSide.setArmState(SideStates.States.Intake);
+                    backSide.setArmState(SideStates.States.MTT);
+                    if (frontSide.getCompletionStatus()) {
+                        robotState = SideStates.States.Unknown;
+                    }
+                }
+                break;
         }
     }
     public void optimizeArmStates() {

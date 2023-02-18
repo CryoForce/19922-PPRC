@@ -17,7 +17,13 @@ public class SideStates {
 
     private States state;
 
+    //stateComplete represents when a state is complete for terry
     private boolean stateComplete = false;
+    //stateReady represents whether or not the state is ready to start the other side movement
+    //not necesarilly done (for example arm stopped moving so second one can start)
+    private boolean stateReady = false;
+    //boolean to represent master approval for continuation
+    private boolean observerApproval = false;
     private int armRestPos, armDrivePos, armIntakePos, armGndPos, armLowPos, armMedPos, armHighPos,
             armTransPos, armMaxPos, elbowRestPos, elbowDrivePos, elbowAutonDrivePos, elbowIntakePos,
             elbowGndPos, elbowLowPos, elbowMedPos, elbowHighPos, elbowTransPos;
@@ -39,7 +45,6 @@ public class SideStates {
         Transfer,
         Delivery,
         Pause,
-        Unpause,
         Unknown
     }
 
@@ -103,6 +108,11 @@ public class SideStates {
         boolean armOn = false;
         boolean elbowOn = true;
 
+        //complete and ready reset
+        stateReady = false;
+        stateComplete = false;
+        observerApproval = false;
+
         //intake pwr vars
         double intakeLPwr = 0;
         double intakeRPwr = 0;
@@ -114,6 +124,7 @@ public class SideStates {
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     armOn = false;
+                    stateReady = true;
                     if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
                         stateComplete = true;
                     }
@@ -128,6 +139,7 @@ public class SideStates {
                 if (armComponent.motorCloseEnough(armCloseRange)
                         && button.isPressed()) {
                     armOn = false;
+                    stateReady = true;
                     if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
                         stateComplete = true;
                     }
@@ -143,6 +155,7 @@ public class SideStates {
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     armOn = false;
+                    stateReady = true;
                     if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
                         stateComplete = true;
                     }
@@ -159,6 +172,7 @@ public class SideStates {
                 if (armComponent.motorCloseEnough(armCloseRange)
                         && button.isPressed()) {
                     armOn = false;
+                    stateReady = true;
                     if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
                         stateComplete = true;
                     }
@@ -171,7 +185,9 @@ public class SideStates {
             case MTH:
                 armComponent.setTarget(armHighPos);
                 elbowComponent.setTarget(elbowHighPos);
-                elbowOn = bronto.turnElbowOnGoingUp(armComponent);
+                stateReady = bronto.turnElbowOnGoingDown(armComponent);
+                elbowOn = stateReady && observerApproval;
+
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     if (button.isPressed()) {
                         armOn = false;
@@ -179,7 +195,7 @@ public class SideStates {
                             stateComplete = true;
                         }
                     } else {
-                        armComponent.incrementTarget((armMaxPos/Math.abs(armMaxPos))*20);
+                        armComponent.incrementTarget(20);
                     }
                 } else {armOn = true;}
                 break;
@@ -194,7 +210,8 @@ public class SideStates {
             case MTT:
                 armComponent.setTarget(armTransPos);
                 elbowComponent.setTarget(elbowTransPos);
-                elbowOn = bronto.turnElbowOnGoingUp(armComponent);
+                stateReady = bronto.turnElbowOnGoingDown(armComponent);
+                elbowOn = stateReady && observerApproval;
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     if (button.isPressed()) {
                         armOn = false;
@@ -218,6 +235,10 @@ public class SideStates {
                 intakeRPwr = -1;
                 if (bronto.returnColor(intakeSensor) != "unknown") {
                     stateComplete = true;
+                    if (observerApproval) {
+                        intakeLPwr = 0;
+                        intakeRPwr = 0;
+                    }
                 }
                 break;
 
@@ -229,6 +250,9 @@ public class SideStates {
                     intakeRPwr = 0;
                     stateComplete = true;
                 }
+                break;
+
+            case Pause:
                 break;
 
             case Unknown:
@@ -253,9 +277,10 @@ public class SideStates {
 
     public States getCurrentState () {return state;}
 
-    public boolean getCompletionStatus () {
-        return stateComplete;
-    }
+    public void setObserverApproval(boolean approval) {observerApproval = approval;}
+
+    public boolean getCompletionStatus () {return stateComplete;}
+    public boolean getReadinessStatus () {return stateReady;}
 
     public String returnColor() {
         return bronto.returnColor(intakeSensor);

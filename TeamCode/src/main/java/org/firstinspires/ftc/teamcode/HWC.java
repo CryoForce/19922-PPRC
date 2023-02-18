@@ -105,14 +105,14 @@ public class HWC {
 
 
     int backArmRestPos = 0;
-    int backArmDrivePos = -906;
-    int backArmIntakePos = -1325;
+    int backArmDrivePos = 906;
+    int backArmIntakePos = 1325;
     int backArmGndPos = 0;
-    int backArmLowPos = -3646;
-    int backArmMedPos = -4838;
-    int backArmHighPos = -5683;
+    int backArmLowPos = 3646;
+    int backArmMedPos = 4838;
+    int backArmHighPos = 5683;
     int backArmTransPos = backArmHighPos; //same
-    final int BACK_ARM_MAX_POS = -6200;
+    final int BACK_ARM_MAX_POS = 6200;
 
     int backElbowRestPos = 0;
     int backElbowDrivePos = 673;
@@ -181,12 +181,10 @@ public class HWC {
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
-        /*
         frontArm.setDirection(DcMotorEx.Direction.FORWARD);
         frontElbow.setDirection(DcMotorEx.Direction.FORWARD);
-        backElbow.setDirection(DcMotorEx.Direction.REVERSE);
+        backElbow.setDirection(DcMotorEx.Direction.FORWARD);
         backArm.setDirection(DcMotorEx.Direction.REVERSE);
-         */
 
         //Sets the wheels to break on zero power
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -245,19 +243,19 @@ public class HWC {
     }
 
     public boolean turnElbowOnGoingDown(RobotComponents armComponent) {
-        if (armComponent.getTarget() < Math.abs(armComponent.armTicksUsingAngle(0))) {
+        if (armComponent.getArmAngle() < 0) {
             return true;
         } return false;
     }
     public boolean turnArmOnGoingDown(RobotComponents armComponent, RobotComponents elbowComponent) {
-        if (armComponent.getTarget() < Math.abs(armComponent.armTicksUsingAngle(-30))
+        if (armComponent.getArmAngle() < -30
                 && !elbowComponent.motorCloseEnough(100)) { //100 is random large range
             return false;
         }
         return true;
     }
     public boolean turnElbowOnGoingUp(RobotComponents armComponent) {
-        if (armComponent.getTarget() < Math.abs(armComponent.armTicksUsingAngle(70))) {
+        if (armComponent.getArmAngle() < 70) {
             return true;
         } return false;
     }

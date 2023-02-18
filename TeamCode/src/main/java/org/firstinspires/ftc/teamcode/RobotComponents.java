@@ -67,6 +67,10 @@ public class RobotComponents {
         return (ticks_per_degree * a + (ticks_in_degrees / 4.0));
     }
 
+    public double getArmAngle () {
+        return (motor.getCurrentPosition()-(ticks_in_degrees / 4.0))/ticks_per_degree;
+    }
+
     public double armAngleUsingCoords (double x, double y) {
         double dist = Math.sqrt(x*x + y*y);
         double d1 = Math.toDegrees(Math.atan2(y, x));
