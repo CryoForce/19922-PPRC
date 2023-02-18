@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.apache.commons.math3.geometry.partitioning.Side;
+
 public class Observer {
+    private SideStates.States robotState;
     private SideStates frontSide;
     private SideStates backSide;
     private HWC bronto;
@@ -63,5 +66,18 @@ public class Observer {
                 bronto.backElbowMedPos,
                 bronto.backElbowHighPos,
                 bronto.backElbowTransPos);
+    }
+    public void setCycleState (SideStates.States newState) {
+        robotState = newState;
+        switch (robotState) {
+            case Intake:
+                if (frontSide.getCurrentState() == )
+        }
+    }
+    public void optimizeArmStates() {
+        if (frontSide.getCurrentState() == SideStates.States.MTT
+                && backSide.getCurrentState() == SideStates.States.MTT) {
+
+        }
     }
 }

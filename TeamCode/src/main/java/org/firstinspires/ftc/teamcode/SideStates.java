@@ -24,7 +24,7 @@ public class SideStates {
     private int armCloseRange = 50;
     private int elbowCloseRange = 50;
 
-    private enum States {
+    public enum States {
         MTR,
         MTD,
         MTI,
@@ -97,7 +97,7 @@ public class SideStates {
         elbowTransPos = initElbowTransPos;
     }
 
-    public void setState(States newState) {
+    public void setArmState(States newState) {
         state = newState;
         //turn on elbow, only turned off in certain states
         boolean armOn = false;
@@ -250,6 +250,8 @@ public class SideStates {
         if (!elbowOn) {elbowMotor.setPower(0);}
         else {elbowComponent.moveUsingPID();}
     }
+
+    public States getCurrentState () {return state;}
 
     public boolean getCompletionStatus () {
         return stateComplete;
