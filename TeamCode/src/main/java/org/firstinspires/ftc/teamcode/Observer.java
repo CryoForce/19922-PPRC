@@ -136,7 +136,19 @@ public class Observer {
                 } else frontSide.setArmState(SideStates.States.MTT);
                 break;
             case HighPole:
-
+                if (backSide.getCurrentState() == SideStates.States.MTH) {
+                    backSide.setArmState(SideStates.States.MTH);
+                    if (backSide.getReadinessStatus()) {
+                        frontSide.setArmState(SideStates.States.MTI);
+                    }
+                    if (backSide.getCompletionStatus()) {
+                        backSide.setArmState(SideStates.States.Delivery);
+                    }
+                } else if (backSide.getCurrentState() == SideStates.States.Delivery) {
+                    if (backSide.getCompletionStatus()) {
+                        robotState = RobotStates.Unknown;
+                    }
+                } else backSide.setArmState(SideStates.States.MTH);
                 break;
             case Unknown:
                 frontSide.setArmState(SideStates.States.Unknown);
