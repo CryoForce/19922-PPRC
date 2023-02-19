@@ -1,10 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
 public class Observer {
-    private SideStates.States robotState;
+    private RobotStates robotState;
     private SideStates frontSide;
     private SideStates backSide;
     private HWC bronto;
+
+    public enum RobotStates {
+        Rest,
+        Drive,
+        Intake,
+        Transfer,
+        LowPole,
+        MedPole,
+        HighPole,
+        Unknown
+    }
 
     public Observer (HWC initBronto) {
         this.bronto = initBronto;
@@ -65,23 +76,73 @@ public class Observer {
                 bronto.backElbowHighPos,
                 bronto.backElbowTransPos);
     }
-    public void setCycleState (SideStates.States newState) {
+    public void setCycleState (RobotStates newState) {
         robotState = newState;
         switch (robotState) {
+            case Rest:
+                frontSide.setArmState(SideStates.States.MTR);
+                backSide.setArmState(SideStates.States.MTR);
+                if (frontSide.getCompletionStatus() && backSide.getCompletionStatus()) {
+                    robotState = RobotStates.Unknown;
+                }
+                break;
+            case Drive:
+                frontSide.setArmState(SideStates.States.MTD);
+                backSide.setArmState(SideStates.States.MTD);
+                if (frontSide.getCompletionStatus() && backSide.getCompletionStatus()) {
+                    robotState = RobotStates.Unknown;
+                }
+                break;
             case Intake:
+                /*
+                if MTI, set again and if ready set back MTT, if done set front Intake
+                if Intake, set again and set back MTT, if complete move to unknown state
+                else set MTI (for the first time)
+                 */
                 if (frontSide.getCurrentState() == SideStates.States.MTI) {
                     frontSide.setArmState(SideStates.States.MTI);
                     if (frontSide.getReadinessStatus()) {
                         backSide.setArmState(SideStates.States.MTT);
                     }
+                    if (frontSide.getCompletionStatus()) {
+                        frontSide.setArmState(SideStates.States.Intake);
+                    }
                 } else if (frontSide.getCurrentState() == SideStates.States.Intake){
                     frontSide.setArmState(SideStates.States.Intake);
                     backSide.setArmState(SideStates.States.MTT);
                     if (frontSide.getCompletionStatus()) {
-                        robotState = SideStates.States.Unknown;
+                        robotState = RobotStates.Unknown;
                     }
-                }
+                } else frontSide.setArmState(SideStates.States.MTI);
                 break;
+            case Transfer:
+                if (frontSide.getCurrentState() == SideStates.States.MTT) {
+                    frontSide.setArmState(SideStates.States.MTT);
+                    if (frontSide.getReadinessStatus()) {
+                        backSide.setArmState(SideStates.States.MTT);
+                    }
+                    if (frontSide.getCompletionStatus() && backSide.getCompletionStatus()) {
+                        frontSide.setArmState(SideStates.States.Transfer);
+                        backSide.setArmState(SideStates.States.Transfer);
+                    }
+                } else if (frontSide.getCurrentState() == SideStates.States.Transfer) {
+                    frontSide.setArmState(SideStates.States.Transfer);
+                    backSide.setArmState(SideStates.States.Transfer);
+                    if (frontSide.returnColor() == "unknown" && backSide.returnColor() != "unknown") {
+                        frontSide.setObserverApproval(true);
+                        backSide.setObserverApproval(true);
+                        robotState = RobotStates.Unknown;
+                    }
+                } else frontSide.setArmState(SideStates.States.MTT);
+                break;
+            case HighPole:
+
+                break;
+            case Unknown:
+                frontSide.setArmState(SideStates.States.Unknown);
+                backSide.setArmState(SideStates.States.Unknown);
+                break;
+
         }
     }
     public void optimizeArmStates() {
