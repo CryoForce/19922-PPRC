@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.Range;
 
 public class SideStates {
     private DcMotorEx armMotor, elbowMotor;
@@ -264,9 +265,7 @@ public class SideStates {
 
         }
 
-        if (Math.abs(armComponent.getTarget()) < Math.abs(armMaxPos)) {
-            armComponent.setTarget(armMaxPos);
-        } //TODO: figure out way to make this also work for 0 limit
+        armComponent.setTarget(Range.clip(armComponent.getTarget(), 0, armMaxPos)); //prevents from going past max
 
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (!armOn) {armMotor.setPower(0);}
