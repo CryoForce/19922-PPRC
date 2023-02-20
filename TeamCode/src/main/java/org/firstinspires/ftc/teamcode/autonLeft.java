@@ -159,11 +159,3 @@ public class autonLeft extends LinearOpMode {
             bronto.frontArmComponent.moveUsingPID();
             bronto.frontElbowComponent.moveUsingPID();
         }
-
-        // Stop all motors
-        bronto.frontArm.setPower(0);
-        bronto.frontElbow.setPower(0);
-        bronto.backArm.setPower(0);
-        bronto.backElbow.setPower(0);
-    }
-}

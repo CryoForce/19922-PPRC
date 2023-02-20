@@ -71,12 +71,6 @@ public class TC {
     }
 
     // General Movement
-    public static Trajectory forwardToOpenArms(SampleMecanumDrive drive, Pose2d pos) {
-        return drive.trajectoryBuilder(pos)
-                .forward(2) //TODO: Change the distance forward after testing auton
-                .build();
-    }
-
     public static Trajectory forward(SampleMecanumDrive drive, Pose2d pos, int distance) {
         return drive.trajectoryBuilder(pos)
                 .forward(distance)
