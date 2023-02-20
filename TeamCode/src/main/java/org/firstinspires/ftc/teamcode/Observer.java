@@ -11,9 +11,10 @@ public class Observer {
         Drive,
         Intake,
         Transfer,
-        LowPole,
-        MedPole,
-        HighPole,
+        GndJct,
+        LowJct,
+        MedJct,
+        HighJct,
         Unknown
     }
 
@@ -135,7 +136,7 @@ public class Observer {
                     }
                 } else frontSide.setArmState(SideStates.States.MTT);
                 break;
-            case HighPole:
+            case HighJct:
                 if (backSide.getCurrentState() == SideStates.States.MTH) {
                     backSide.setArmState(SideStates.States.MTH);
                     if (backSide.getReadinessStatus()) {
@@ -157,10 +158,5 @@ public class Observer {
 
         }
     }
-    public void optimizeArmStates() {
-        if (frontSide.getCurrentState() == SideStates.States.MTT
-                && backSide.getCurrentState() == SideStates.States.MTT) {
-
-        }
-    }
+    public RobotStates getRobotState() {return robotState;}
 }

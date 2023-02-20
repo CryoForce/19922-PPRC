@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @TeleOp(name="Observing TeleOp", group="Iterative Opmode")
@@ -13,56 +16,9 @@ public class ObservingTeleOp extends OpMode {
     HWC bronto;
     BrontoBrain brain;
 
-    public enum FrontStates {
-        MTR,
-        MTD,
-        MTI,
-        MTT,
-        MTH,
-        MTM,
-        MTL,
-        MTG,
-        Rest,
-        Drive,
-        Intake,
-        Transfer,
-        Delivery,
-        Pause,
-        Unpause,
-        Unknown
-    }
-    public enum BackStates {
-        MTR,
-        MTD,
-        MTI,
-        MTT,
-        MTH,
-        MTM,
-        MTL,
-        MTG,
-        Rest,
-        Drive,
-        Intake,
-        Transfer,
-        Delivery,
-        Pause,
-        Unpause,
-        Unknown
-    }
-
     private ElapsedTime runTime = new ElapsedTime();
 
-    //initialize arm targets
-    int frontArmTarget = 0;
-    int backArmTarget = 0;
-    int frontElbowTarget = 0;
-    int backElbowTarget = 0;
-
-    //initialize closeEnough Range values
-    int armCloseRange = 50;
-    int elbowCloseRangeCont = 20;
-
-    //initialize motor powers
+    //initialize drive motor powers
     double leftFPwr;
     double rightFPwr;
     double leftBPwr;
@@ -73,27 +29,16 @@ public class ObservingTeleOp extends OpMode {
     double turn;
     double strafe;
 
-    //initialize servo powwers
-    double intakePwr = 0;
-    double outtakePwr = 0;
-
-    //initialzie Arm values are close and elbow is on
-    boolean frontArmOn = false;
-    boolean backArmOn = false;
-    boolean frontElbowOn = false;
-    boolean backElbowOn = false;
-
-    //initialize averaged distances arrays
-    double [] frontDistances = new double [3];
-    double [] backDistances = new double [3];
-
-    FrontStates frontState = FrontStates.Rest;
-    BackStates backState = BackStates.Rest;
+    //initialize robotState and observer
+    Observer terry;
+    Observer.RobotStates robotState;
 
     @Override
     public void init() {
         bronto = new HWC(hardwareMap, telemetry);
+        terry = new Observer(bronto);
         brain = new BrontoBrain(bronto);
+
         telemetry.addData("Status: ", "Initializing");
         //stop and reset and set to run w/o encoder
         bronto.frontElbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -111,8 +56,13 @@ public class ObservingTeleOp extends OpMode {
         bronto.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         bronto.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        frontState = FrontStates.Rest;
-        backState = BackStates.Rest;
+        //set arm motor directions
+        bronto.frontArm.setDirection(DcMotorSimple.Direction.FORWARD);
+        bronto.frontElbow.setDirection(DcMotorSimple.Direction.FORWARD);
+        bronto.backArm.setDirection(DcMotorSimple.Direction.REVERSE);
+        bronto.backElbow.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        robotState = Observer.RobotStates.Rest;
 
         telemetry.addData("Status: ", "Initialized");
     }
@@ -122,176 +72,70 @@ public class ObservingTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        //robot too fast and Omar bad at driving
-        drive = -gamepad1.left_stick_y *.8;
+        //robot too fast and Jack bad at driving
+        drive = -gamepad1.left_stick_y * .8;
         turn = gamepad1.left_stick_x * .6;
         strafe = -gamepad1.right_stick_x * .8;
 
-        //turn on elbows, only turned off in certain states
-        frontElbowOn = true;
-        backElbowOn = true;
-
-        switch (frontState) {
-            case MTI:
-                telemetry.addData("Front Arm State: ", "MTI");
-                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
-                    frontArmOn = false;
-                    frontState = FrontStates.Intake;
-                } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
-                            bronto.frontElbowComponent);
-                }
-
-                break;
-            case MTR:
-                telemetry.addData("Front Arm State: ", "MTR");
-                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)
-                        && bronto.frontButton.isPressed()) {
-                    frontArmOn = false;
-                    frontState = FrontStates.Rest;
-                } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
-                            bronto.frontElbowComponent);
-                }
-                break;
-
-            case MTD:
-                telemetry.addData("Front Arm State: ", "MTD");
-                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
-                    frontArmOn = false;
-                    frontState = FrontStates.Drive;
-                } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
-                            bronto.frontElbowComponent);
-                }
-                break;
-
-            case MTG:
-                telemetry.addData("Front Arm State: ", "MTG");
-                frontElbowOn = bronto.turnElbowOnGoingDown(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)
-                        && bronto.frontButton.isPressed()) {
-                    frontArmOn = false;
-                    frontState = FrontStates.Delivery;
-                } else {
-                    frontArmOn = bronto.turnArmOnGoingDown(bronto.frontArmComponent,
-                            bronto.frontElbowComponent);
-                }
-                break;
-
-            case MTH:
-                telemetry.addData("Front Arm State: ", "MTH");
-                frontElbowOn = bronto.turnElbowOnGoingUp(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
-                    if (bronto.frontButton.isPressed()) {
-                        frontArmOn = false;
-                        frontState = FrontStates.Delivery;
-                    } else {
-                        bronto.frontArmComponent.incrementTarget(-20);
-                    }
-                } else {frontArmOn = true;}
-                break;
-
-            case MTL:
-
-                break;
-
-            case MTM:
-                break;
-
-            case MTT:
-                telemetry.addData("Front Arm State: ", "MTT");
-                frontElbowOn = bronto.turnElbowOnGoingUp(bronto.frontArmComponent);
-                if (bronto.frontArmComponent.motorCloseEnough(armCloseRange)) {
-                    if (bronto.frontButton.isPressed()) {
-                        frontArmOn = true;
-                        frontState = FrontStates.Transfer;
-                    } else {
-                        bronto.frontArmComponent.incrementTarget(-20);
-                    }
-                } else {frontArmOn = true;}
-                break;
-
-            case Rest:
-                telemetry.addData("Front Arm State: ", "Rest");
-                break;
-
-            case Drive:
-                telemetry.addData("Front Arm State: ", "Drive");
-                break;
-
-            case Transfer:
-                telemetry.addData("Front Arm State: ", "Transfer");
-                break;
-
-            case Delivery:
-                break;
-
-            case Unknown:
-                break;
-
-            default:
-                backState = BackStates.Unknown;
-                break;
+        //calculate drive pwr
+        if (drive != 0 || turn != 0) {
+            leftFPwr = Range.clip(drive + turn, -1.0, 1.0);
+            rightFPwr = Range.clip(drive - turn, -1.0, 1.0);
+            leftBPwr = Range.clip(drive + turn, -1.0, 1.0);
+            rightBPwr = Range.clip(drive - turn, -1.0, 1.0);
+        } else if (strafe != 0) {
+            /* Strafing */
+            leftFPwr = -strafe;
+            rightFPwr = strafe;
+            leftBPwr = strafe;
+            rightBPwr = -strafe;
+        } else {
+            leftFPwr = 0;
+            rightFPwr = 0;
+            leftBPwr = 0;
+            rightBPwr = 0;
         }
 
-//TODO fill in these states
-        switch (backState) {
-            case MTI:
-                break;
+        if (gamepad1.y) robotState = Observer.RobotStates.Intake;
+        if (gamepad1.x) robotState = Observer.RobotStates.Transfer;
+        if (gamepad1.b) robotState = Observer.RobotStates.HighJct; //eventually needs to be modifiable to diff poles
 
-            case MTR:
-                break;
+        bronto.leftFront.setPower(leftFPwr);
+        bronto.leftRear.setPower(leftBPwr);
+        bronto.rightFront.setPower(rightFPwr);
+        bronto.rightRear.setPower(rightBPwr);
 
-            case MTD:
-                break;
-
-            case MTG:
-                break;
-
-            case MTH:
-                break;
-
-            case MTL:
-                break;
-
-            case MTM:
-                break;
-
-            case MTT:
-                break;
-
-            case Rest:
-                break;
-
-            case Drive:
-                break;
-
-            case Transfer:
-                break;
-
-            case Delivery:
-                break;
-
-            case Unknown:
-                break;
-
-            default:
-                backState = BackStates.Unknown;
-                break;
-
-
-
-
+        if (terry.getRobotState() != Observer.RobotStates.Unknown) {
+            terry.setCycleState(robotState);
+        } else {
+            robotState = Observer.RobotStates.Unknown;
+            terry.setCycleState(robotState);
         }
+
+        telemetry.addLine();
+        telemetry.addData("frontArm Target", bronto.frontArmComponent.getTarget());
+        telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
+        telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("frontElbow Target", bronto.frontElbowComponent.getTarget());
+        telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
+        telemetry.addData("frontElbow Pwr", bronto.frontElbow.getPower());
+        telemetry.addLine();
+        telemetry.addData("backArm Target", bronto.backArmComponent.getTarget());
+        telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
+        telemetry.addData("backArm Pwr", bronto.backArm.getPower());
+        telemetry.addLine();
+        telemetry.addData("backElbow Target", bronto.backElbowComponent.getTarget());
+        telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
+        telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
+        telemetry.addLine();
+        telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addLine();
+        //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
+        // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
+        telemetry.update();
 
     }
 
-
-
-
 }
-//looks good!
