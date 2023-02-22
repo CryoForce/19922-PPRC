@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -18,16 +17,10 @@ public class ObservingTeleOp extends OpMode {
 
     private ElapsedTime runTime = new ElapsedTime();
 
-    //initialize drive motor powers
-    double leftFPwr;
-    double rightFPwr;
-    double leftBPwr;
-    double rightBPwr;
-
-    //initialize motor vals
-    double drive;
-    double turn;
-    double strafe;
+    //int representing the current scoring height
+    //bool representing side of robot scoring
+    int jctHeight; //0=gnd, 1=low, 2=med, 3=high
+    boolean backScoring; //true = delivery from back side, false = delivery from front
 
     //initialize robotState and observer
     Observer terry;
@@ -64,6 +57,10 @@ public class ObservingTeleOp extends OpMode {
 
         robotState = Observer.RobotStates.Rest;
 
+        jctHeight = 3; //init to high pole
+        backScoring = true; //init to back side scoring
+        terry.changeScoringSide(backScoring);
+
         telemetry.addData("Status: ", "Initialized");
     }
 
@@ -72,38 +69,39 @@ public class ObservingTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        //robot too fast and Jack bad at driving
-        drive = -gamepad1.left_stick_y * .8;
-        turn = gamepad1.left_stick_x * .6;
-        strafe = -gamepad1.right_stick_x * .8;
 
-        //calculate drive pwr
-        if (drive != 0 || turn != 0) {
-            leftFPwr = Range.clip(drive + turn, -1.0, 1.0);
-            rightFPwr = Range.clip(drive - turn, -1.0, 1.0);
-            leftBPwr = Range.clip(drive + turn, -1.0, 1.0);
-            rightBPwr = Range.clip(drive - turn, -1.0, 1.0);
-        } else if (strafe != 0) {
-            /* Strafing */
-            leftFPwr = -strafe;
-            rightFPwr = strafe;
-            leftBPwr = strafe;
-            rightBPwr = -strafe;
-        } else {
-            leftFPwr = 0;
-            rightFPwr = 0;
-            leftBPwr = 0;
-            rightBPwr = 0;
+        if (gamepad1.dpad_up) jctHeight = 3; //high
+        else if (gamepad1.dpad_right) jctHeight = 2; //med
+        else if (gamepad1.dpad_down) jctHeight = 1; //low
+        else if (gamepad1.dpad_left) jctHeight = 0; //gnd
+
+        if (gamepad1.back) {
+            backScoring = !backScoring; //toggle backScoring true/false
+            terry.changeScoringSide(backScoring);
         }
 
-        if (gamepad1.y) robotState = Observer.RobotStates.Intake;
-        if (gamepad1.x) robotState = Observer.RobotStates.Transfer;
-        if (gamepad1.b) robotState = Observer.RobotStates.HighJct; //eventually needs to be modifiable to diff poles
+        if (gamepad1.a) {
+            if (gamepad1.x) robotState = Observer.RobotStates.Rest;
+            if (gamepad1.y) {
 
-        bronto.leftFront.setPower(leftFPwr);
-        bronto.leftRear.setPower(leftBPwr);
-        bronto.rightFront.setPower(rightFPwr);
-        bronto.rightRear.setPower(rightBPwr);
+            }
+            if (gamepad1.b) robotState = Observer.RobotStates.Drive;
+        }
+        else if (gamepad1.y) robotState = Observer.RobotStates.Transfer;
+        else if (gamepad1.x) robotState = Observer.RobotStates.Intake;
+        else if (gamepad1.b) {
+            if (jctHeight == 0) robotState = Observer.RobotStates.GndJct;
+            if (jctHeight == 1) robotState = Observer.RobotStates.LowJct;
+            if (jctHeight == 2) robotState = Observer.RobotStates.MedJct;
+            if (jctHeight == 3) robotState = Observer.RobotStates.HighJct;
+        }
+
+        if (gamepad1.left_bumper && gamepad1.right_bumper) {
+            bronto.frontArm.setPower(0);
+            bronto.frontElbow.setPower(0);
+            bronto.backArm.setPower(0);
+            bronto.backElbow.setPower(0);
+        }
 
         if (terry.getRobotState() != Observer.RobotStates.Unknown) {
             terry.setCycleState(robotState);
@@ -112,6 +110,14 @@ public class ObservingTeleOp extends OpMode {
             terry.setCycleState(robotState);
         }
 
+        //HWC drive pwr and calculations
+        bronto.manualDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+        telemetry.addData("Bronto State: ", robotState);
+        telemetry.addData("Terry State: ", terry.getRobotState());
+        telemetry.addData("Front Arm State: ", terry.getFrontState());
+        telemetry.addData("Back Arm State: ", terry.getBackState());
+        telemetry.addData("Back Scoring: ", backScoring);
         telemetry.addLine();
         telemetry.addData("frontArm Target", bronto.frontArmComponent.getTarget());
         telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());

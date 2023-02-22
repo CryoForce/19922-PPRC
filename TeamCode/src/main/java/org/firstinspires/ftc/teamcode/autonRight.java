@@ -69,58 +69,58 @@ public class autonRight extends LinearOpMode {
         int frontElbowTarget = 0;
 
         // Move arm using PID
-        while(!bronto.backArmComponent.motorCloseEnough(20)) {
+        while (!bronto.backArmComponent.motorCloseEnough(20)) {
             bronto.backArmComponent.moveUsingPID();
         }
 
-        while(!bronto.backButton.isPressed()) {
+        while (!bronto.backButton.isPressed()) {
             backArmTarget -= 20;
             bronto.backArmComponent.moveUsingPID();
         }
 
         // Move elbow using PID & Distance Sensors
         double distAvg = bronto.backHighDist;
-        double [] distances = new double[3];
+        double[] distances = new double[3];
 
-        while(!bronto.backElbowComponent.motorCloseEnough(20)) {
+        while (!bronto.backElbowComponent.motorCloseEnough(20)) {
             bronto.backElbowComponent.moveUsingPID();
         }
 
-        while(!bronto.backElbowComponent.motorCloseEnough(20)
+        while (!bronto.backElbowComponent.motorCloseEnough(20)
                 && !bronto.closeEnough((int) distAvg, bronto.backHighDist, 1)) {
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
             bronto.backElbowComponent.moveUsingPID();
             if (distances[2] != 0) {
-                distances [2] = distances [1]; //pushback old values
-                distances [1] = distances [0];
-                distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
+                distances[2] = distances[1]; //pushback old values
+                distances[1] = distances[0];
+                distances[0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
                 distAvg = (distances[0] + distances[1] + distances[2]) / 3;
             } else if (distances[0] == 0) { //dummy easy way to add values at beginning
-                distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             } else if (distances[1] == 0) {
-                distances [1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             } else {
-                distances [2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             }
         }
 
         // Run Intake to Deliver Cone
-        while(bronto.returnColor(bronto.backIntakeSensor) != "unknown") {
+        while (bronto.returnColor(bronto.backIntakeSensor) != "unknown") {
             bronto.backIntakeL.setPower(-1);
             bronto.backIntakeR.setPower(-1);
             backElbowTarget += bronto.moveBySetDistance(distAvg, bronto.backHighDist);
             bronto.backElbowComponent.moveUsingPID();
             if (distances[2] != 0) {
-                distances [2] = distances [1]; //pushback old values
-                distances [1] = distances [0];
-                distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
+                distances[2] = distances[1]; //pushback old values
+                distances[1] = distances[0];
+                distances[0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM); //new value
                 distAvg = (distances[0] + distances[1] + distances[2]) / 3;
             } else if (distances[0] == 0) { //dummy easy way to add values at beginning
-                distances [0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[0] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             } else if (distances[1] == 0) {
-                distances [1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[1] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             } else {
-                distances [2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
+                distances[2] = bronto.backDistanceSensor.getDistance(DistanceUnit.CM);
             }
         }
 
@@ -133,13 +133,13 @@ public class autonRight extends LinearOpMode {
         // Drive to parking location based off of CV from earlier
         bronto.drive.followTrajectory(TC.RIGHT_forwardToPark(bronto.drive, newPos));
         newPos = TC.RIGHT_forwardToPark(bronto.drive, newPos).end();
-        if(bronto.parkingZone == 1) {
+        if (bronto.parkingZone == 1) {
             bronto.drive.followTrajectory(TC.RIGHT_parkingZone1(bronto.drive, newPos));
             newPos = TC.RIGHT_parkingZone1(bronto.drive, newPos).end();
-        } else if(bronto.parkingZone == 2) {
+        } else if (bronto.parkingZone == 2) {
             bronto.drive.followTrajectory(TC.RIGHT_parkingZone2(bronto.drive, newPos));
             newPos = TC.RIGHT_parkingZone2(bronto.drive, newPos).end();
-        } else if(bronto.parkingZone == 3) {
+        } else if (bronto.parkingZone == 3) {
             bronto.drive.followTrajectory(TC.RIGHT_parkingZone3(bronto.drive, newPos));
             newPos = TC.RIGHT_parkingZone3(bronto.drive, newPos).end();
         } else {
@@ -154,7 +154,7 @@ public class autonRight extends LinearOpMode {
         frontElbowTarget = bronto.frontElbowRestPos;
 
         // Move arms using PID
-        while(!bronto.backArmComponent.motorCloseEnough(20)
+        while (!bronto.backArmComponent.motorCloseEnough(20)
                 && !bronto.backElbowComponent.motorCloseEnough(20)
                 && !bronto.frontArmComponent.motorCloseEnough(20)
                 && !bronto.frontElbowComponent.motorCloseEnough(20)) {
@@ -163,3 +163,5 @@ public class autonRight extends LinearOpMode {
             bronto.frontArmComponent.moveUsingPID();
             bronto.frontElbowComponent.moveUsingPID();
         }
+    }
+}

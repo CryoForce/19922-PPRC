@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 public class Observer {
     private RobotStates robotState;
+    private SideStates trueFront;
+    private SideStates trueBack;
     private SideStates frontSide;
     private SideStates backSide;
     private HWC bronto;
@@ -20,7 +22,7 @@ public class Observer {
 
     public Observer (HWC initBronto) {
         this.bronto = initBronto;
-        frontSide = new SideStates(bronto,
+        trueFront = new SideStates(bronto,
                 bronto.frontArm,
                 bronto.frontElbow,
                 bronto.frontArmComponent,
@@ -48,7 +50,7 @@ public class Observer {
                 bronto.frontElbowMedPos,
                 bronto.frontElbowHighPos,
                 bronto.frontElbowTransPos);
-        backSide = new SideStates(bronto,
+        trueBack = new SideStates(bronto,
                 bronto.backArm,
                 bronto.backElbow,
                 bronto.backArmComponent,
@@ -76,6 +78,8 @@ public class Observer {
                 bronto.backElbowMedPos,
                 bronto.backElbowHighPos,
                 bronto.backElbowTransPos);
+        frontSide = trueFront;
+        backSide = trueBack;
     }
     public void setCycleState (RobotStates newState) {
         robotState = newState;
@@ -158,5 +162,18 @@ public class Observer {
 
         }
     }
+
+    //method that switches front and back between true front and back
+    public void changeScoringSide (boolean backScoring) {
+        if (backScoring) {
+            frontSide = trueFront;
+            backSide = trueBack;
+        } else {
+            backSide = trueFront;
+            frontSide = trueBack;
+        }
+    }
     public RobotStates getRobotState() {return robotState;}
+    public SideStates.States getFrontState() {return trueFront.getCurrentState();}
+    public SideStates.States getBackState() {return trueBack.getCurrentState();}
 }

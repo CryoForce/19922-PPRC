@@ -186,8 +186,9 @@ public class SideStates {
             case MTH:
                 armComponent.setTarget(armHighPos);
                 elbowComponent.setTarget(elbowHighPos);
-                stateReady = bronto.turnElbowOnGoingDown(armComponent);
-                elbowOn = stateReady && observerApproval;
+                stateReady = bronto.turnElbowOnGoingUp(armComponent);
+                elbowOn = stateReady; //observer approval not needed atm
+                        //&& observerApproval;
 
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     if (button.isPressed()) {
@@ -202,17 +203,37 @@ public class SideStates {
                 break;
 
             case MTL:
-
+                armComponent.setTarget(armLowPos);
+                elbowComponent.setTarget(elbowLowPos);
+                stateReady = bronto.turnElbowOnGoingUp(armComponent);
+                elbowOn = stateReady;
+                if (armComponent.motorCloseEnough(armCloseRange)) {
+                    armOn = false;
+                    if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
+                        stateComplete = true;
+                    }
+                }
                 break;
 
             case MTM:
+                armComponent.setTarget(armMedPos);
+                elbowComponent.setTarget(elbowMedPos);
+                stateReady = bronto.turnElbowOnGoingUp(armComponent);
+                elbowOn = stateReady;
+                if (armComponent.motorCloseEnough(armCloseRange)) {
+                    armOn = false;
+                    if (elbowComponent.motorCloseEnough(elbowCloseRange)) {
+                        stateComplete = true;
+                    }
+                }
                 break;
 
             case MTT:
                 armComponent.setTarget(armTransPos);
                 elbowComponent.setTarget(elbowTransPos);
                 stateReady = bronto.turnElbowOnGoingDown(armComponent);
-                elbowOn = stateReady && observerApproval;
+                elbowOn = stateReady; //observer approval not needed atm
+                        //&& observerApproval;
                 if (armComponent.motorCloseEnough(armCloseRange)) {
                     if (button.isPressed()) {
                         armOn = false;

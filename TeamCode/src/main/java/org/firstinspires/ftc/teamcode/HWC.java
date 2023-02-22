@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -262,6 +263,41 @@ public class HWC {
         if (armComponent.getArmAngle() < 70) {
             return true;
         } return false;
+    }
+
+    public void manualDrive(double leftStickY, double leftStickX, double rightStickX) {
+        //robot too fast and Jack bad at driving
+        double drive = -leftStickY * .8;
+        double strafe = -leftStickX * .8;
+        double turn = rightStickX * .6;
+
+        double leftFPwr;
+        double rightFPwr;
+        double leftBPwr;
+        double rightBPwr;
+
+        //calculate drive pwr
+        if (drive != 0 || turn != 0) {
+            leftFPwr = Range.clip(drive + turn, -1.0, 1.0);
+            rightFPwr = Range.clip(drive - turn, -1.0, 1.0);
+            leftBPwr = Range.clip(drive + turn, -1.0, 1.0);
+            rightBPwr = Range.clip(drive - turn, -1.0, 1.0);
+        } else if (strafe != 0) {
+            /* Strafing */
+            leftFPwr = -strafe;
+            rightFPwr = strafe;
+            leftBPwr = strafe;
+            rightBPwr = -strafe;
+        } else {
+            leftFPwr = 0;
+            rightFPwr = 0;
+            leftBPwr = 0;
+            rightBPwr = 0;
+        }
+        leftFront.setPower(leftFPwr);
+        leftRear.setPower(leftBPwr);
+        rightFront.setPower(rightFPwr);
+        rightRear.setPower(rightBPwr);
     }
 
     // Function to run intake set of servos to intake a cone/transfer to other arm
