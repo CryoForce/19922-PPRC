@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class stateFinalAuton extends LinearOpMode {
     public static HWC.START_POSITION startPosition;
     HWC bronto;
+    public int backElbowTarget, frontElbowTarget, backArmTarget, frontArmTarget = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -203,8 +204,10 @@ public class stateFinalAuton extends LinearOpMode {
         telemetry.setAutoClear(false);
         telemetry.update();
         //Run the trajectory built for Auto and Parking
-        bronto.drive.followTrajectorySequence(trajectoryAuto);
-        bronto.drive.followTrajectorySequence(trajectoryParking);
+//        bronto.drive.followTrajectorySequence(trajectoryAuto);
+//        bronto.drive.followTrajectorySequence(trajectoryParking);
+        bronto.drive.followTrajectorySequenceAndArms(trajectoryAuto, bronto, backElbowTarget, frontElbowTarget, backArmTarget, frontArmTarget);
+        bronto.drive.followTrajectorySequenceAndArms(trajectoryParking, bronto, backElbowTarget, frontElbowTarget, backArmTarget, frontArmTarget);
     }
 
     //Write a method which is able to pick the cone from the stack depending on your subsystems

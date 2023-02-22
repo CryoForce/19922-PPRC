@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.HWC;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -199,6 +200,23 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);
+    }
+
+    // CUSTOM ONES :)
+    public void followTrajectorySequenceAndArms(TrajectorySequence trajectorySequence, HWC hwc, int backElbowTarget, int frontElbowTarget, int backArmTarget, int frontArmTarget) {
+        trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);
+        waitForIdleAndArms(hwc, backElbowTarget, frontElbowTarget, backArmTarget, frontArmTarget);
+
+    }
+
+    private void waitForIdleAndArms(HWC hwc, int backElbowTarget, int frontElbowTarget, int backArmTarget, int frontArmTarget) {
+        while (!Thread.currentThread().isInterrupted() && isBusy()) {
+            update();
+            hwc.backElbow.setTargetPosition(backElbowTarget);
+            hwc.frontElbow.setTargetPosition(frontElbowTarget);
+            hwc.backArm.setTargetPosition(backArmTarget);
+            hwc.frontArm.setTargetPosition(frontArmTarget);
+        }
     }
 
     public void followTrajectorySequence(TrajectorySequence trajectorySequence) {
