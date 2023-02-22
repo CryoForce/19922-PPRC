@@ -160,6 +160,9 @@ public class Observer {
                 frontSide.setArmState(SideStates.States.Unknown);
                 backSide.setArmState(SideStates.States.Unknown);
                 break;
+            default:
+                robotState = RobotStates.Unknown;
+                break;
 
         }
     }

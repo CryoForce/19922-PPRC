@@ -70,6 +70,7 @@ public class ObservingTeleOp extends OpMode {
     @Override
     public void loop() {
 
+        //------------------------------------ GAMEPAD 1 INPUT ----------------------------------//
         if (gamepad1.dpad_up) jctHeight = 3; //high
         else if (gamepad1.dpad_right) jctHeight = 2; //med
         else if (gamepad1.dpad_down) jctHeight = 1; //low
@@ -103,6 +104,7 @@ public class ObservingTeleOp extends OpMode {
             bronto.backElbow.setPower(0);
         }
 
+        //------------------------------------ SETTING CYCLE ------------------------------------//
         if (terry.getRobotState() != Observer.RobotStates.Unknown) {
             terry.setCycleState(robotState);
         } else {
@@ -110,9 +112,41 @@ public class ObservingTeleOp extends OpMode {
             terry.setCycleState(robotState);
         }
 
+        //------------------------------------ GAMEPAD 2 INPUT ---------------------------------//
+        /*
+        this is placed AFTER cycle setting since it will override any
+        power setting for stuff like intake
+         */
+        //arm manual increment
+        if (gamepad2.left_stick_y != 0) {
+            bronto.backArmComponent.incrementTarget(gamepad2.left_stick_y * 70);
+        } else if (gamepad2.right_stick_y != 0) {
+            bronto.frontArmComponent.incrementTarget(gamepad2.right_stick_y * 70);
+        } else if (gamepad2.left_stick_x != 0) {
+            bronto.backElbowComponent.incrementTarget(gamepad2.left_stick_x * 15);
+        } else if (gamepad2.right_stick_x != 0) {
+            bronto.frontElbowComponent.incrementTarget(gamepad2.right_stick_x * 15);
+        }
+        //servo manual control
+        if (gamepad2.left_trigger != 0) { //triggers are forward, check neg
+            bronto.backIntakeL.setPower(-gamepad2.left_trigger);
+            bronto.backIntakeR.setPower(-gamepad2.left_trigger);
+        } else if (gamepad2.right_trigger != 0) {
+            bronto.frontIntakeL.setPower(-gamepad2.left_trigger);
+            bronto.frontIntakeR.setPower(-gamepad2.left_trigger);
+        } else if (gamepad2.left_bumper) {
+            bronto.backIntakeL.setPower(1);
+            bronto.backIntakeR.setPower(1);
+        } else if (gamepad2.right_bumper) {
+            bronto.frontIntakeL.setPower(1);
+            bronto.frontIntakeR.setPower(1);
+        } //TODO: check negatives
+
+        //--------------------------------------- DRIVING --------------------------------------//
         //HWC drive pwr and calculations
         bronto.manualDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+        //--------------------------------------- TELEMETRY ------------------------------------//
         telemetry.addData("Bronto State: ", robotState);
         telemetry.addData("Terry State: ", terry.getRobotState());
         telemetry.addData("Front Arm State: ", terry.getFrontState());
