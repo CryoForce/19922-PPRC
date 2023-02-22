@@ -88,7 +88,8 @@ public class Observer {
                 frontSide.setArmState(SideStates.States.MTR);
                 backSide.setArmState(SideStates.States.MTR);
                 if (frontSide.getCompletionStatus() && backSide.getCompletionStatus()) {
-                    robotState = RobotStates.Unknown;
+                    frontSide.setArmState(SideStates.States.Rest);
+                    backSide.setArmState(SideStates.States.Rest);
                 }
                 break;
             case Drive:

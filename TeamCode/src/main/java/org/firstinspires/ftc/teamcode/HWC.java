@@ -260,7 +260,7 @@ public class HWC {
         return true;
     }
     public boolean turnElbowOnGoingUp(RobotComponents armComponent) {
-        if (armComponent.getArmAngle() < 70) {
+        if (armComponent.getArmAngle() > 70) {
             return true;
         } return false;
     }

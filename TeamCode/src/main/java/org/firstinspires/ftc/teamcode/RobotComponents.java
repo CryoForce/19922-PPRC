@@ -12,13 +12,14 @@ public class RobotComponents {
     private final PIDController controller;
     private final double armLength = 38.4; //cm, random atm TODO: check arm lengths
     private final double elbowLength = 19.2; //cm
-    private double target = 0;
+    private double target;
 
     RobotComponents (DcMotorEx motor, double ticks_in_degrees, double p, double i, double d, double f) {
         this.motor = motor;
         this.ticks_in_degrees = ticks_in_degrees;
         this.F = f;
         ticks_per_degree = ticks_in_degrees/360.0;
+        target = 0;
 
         controller = new PIDController (p,i,d);
     }

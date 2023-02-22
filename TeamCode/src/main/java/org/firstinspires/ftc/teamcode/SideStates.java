@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
 
 public class SideStates {
     private DcMotorEx armMotor, elbowMotor;
@@ -77,12 +76,15 @@ public class SideStates {
                        int initElbowMedPos, 
                        int initElbowHighPos, 
                        int initElbowTransPos) {
+        armMotor = initArmMotor;
+        elbowMotor = initElbowMotor;
         armComponent = initArmComponent;
         elbowComponent = initElbowComponent;
         button = initButton;
         intakeL = initIntakeL;
         intakeR = initIntakeR;
         distanceSensor = initDistanceSensor;
+        intakeSensor = initIntakeSensor;
         bronto = initBronto;
 
         armRestPos = initArmRestPos;
@@ -115,11 +117,11 @@ public class SideStates {
         observerApproval = false;
 
         //intake pwr vars
-        double intakeLPwr = 0;
-        double intakeRPwr = 0;
+        double intakePwr = 0;
         
         switch (state) {
             case MTI:
+                armOn = true;
                 armComponent.setTarget(armIntakePos);
                 elbowComponent.setTarget(elbowIntakePos);
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
@@ -134,6 +136,7 @@ public class SideStates {
                 }
                 break;
             case MTR:
+                armOn = true;
                 armComponent.setTarget(armRestPos);
                 elbowComponent.setTarget(elbowRestPos);
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
@@ -151,6 +154,7 @@ public class SideStates {
                 break;
 
             case MTD:
+                armOn = true;
                 armComponent.setTarget(armDrivePos);
                 elbowComponent.setTarget(elbowDrivePos);
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
@@ -167,6 +171,7 @@ public class SideStates {
                 break;
 
             case MTG:
+                armOn = true;
                 armComponent.setTarget(armGndPos);
                 elbowComponent.setTarget(elbowGndPos);
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
@@ -184,7 +189,8 @@ public class SideStates {
                 break;
 
             case MTH:
-                armComponent.setTarget(armHighPos);
+                armOn = true;
+                armComponent.setTarget(5683);
                 elbowComponent.setTarget(elbowHighPos);
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady; //observer approval not needed atm
@@ -203,6 +209,7 @@ public class SideStates {
                 break;
 
             case MTL:
+                armOn = true;
                 armComponent.setTarget(armLowPos);
                 elbowComponent.setTarget(elbowLowPos);
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
@@ -216,6 +223,7 @@ public class SideStates {
                 break;
 
             case MTM:
+                armOn = true;
                 armComponent.setTarget(armMedPos);
                 elbowComponent.setTarget(elbowMedPos);
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
@@ -229,6 +237,7 @@ public class SideStates {
                 break;
 
             case MTT:
+                armOn = true;
                 armComponent.setTarget(armTransPos);
                 elbowComponent.setTarget(elbowTransPos);
                 stateReady = bronto.turnElbowOnGoingDown(armComponent);
@@ -253,23 +262,19 @@ public class SideStates {
                 break;
 
             case Transfer:
-                intakeLPwr = -1;
-                intakeRPwr = -1;
+                intakePwr = -1;
                 if (bronto.returnColor(intakeSensor) != "unknown") {
                     stateComplete = true;
                     if (observerApproval) {
-                        intakeLPwr = 0;
-                        intakeRPwr = 0;
+                        intakePwr = 0;
                     }
                 }
                 break;
 
             case Delivery:
-                intakeLPwr = -1;
-                intakeRPwr = -1;
+                intakePwr = -1;
                 if (bronto.returnColor(intakeSensor) != "unknown") {
-                    intakeLPwr = 0;
-                    intakeRPwr = 0;
+                    intakePwr = 0;
                     stateComplete = true;
                 }
                 break;
@@ -286,7 +291,11 @@ public class SideStates {
 
         }
 
-        armComponent.setTarget(Range.clip(armComponent.getTarget(), 0, armMaxPos)); //prevents from going past max
+        //armComponent.setTarget(Range.clip(armComponent.getTarget(), 0, armMaxPos)); //prevents from going past max
+
+        //set servo pwr
+        intakeL.setPower(intakePwr);
+        intakeR.setPower(intakePwr);
 
         //after going through every state to determine what is close for the arms, set to 0 if they are close enough
         if (!armOn) {armMotor.setPower(0);}
