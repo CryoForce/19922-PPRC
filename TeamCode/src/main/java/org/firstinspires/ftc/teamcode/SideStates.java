@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.Range;
 
 public class SideStates {
     private DcMotorEx armMotor, elbowMotor;
@@ -94,6 +95,7 @@ public class SideStates {
         armLowPos = initArmMedPos;
         armHighPos = initArmHighPos;
         armTransPos = initArmTransPos;
+        armMaxPos = initArmMaxPos;
         elbowRestPos = initElbowRestPos;
         elbowDrivePos = initElbowDrivePos;
         elbowAutonDrivePos = initElbowAutonDrivePos;
@@ -240,7 +242,7 @@ public class SideStates {
                 armOn = true;
                 armComponent.setTarget(armTransPos);
                 elbowComponent.setTarget(elbowTransPos);
-                stateReady = bronto.turnElbowOnGoingDown(armComponent);
+                stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady; //observer approval not needed atm
                         //&& observerApproval;
                 if (armComponent.motorCloseEnough(armCloseRange)) {
@@ -291,7 +293,7 @@ public class SideStates {
 
         }
 
-        //armComponent.setTarget(Range.clip(armComponent.getTarget(), 0, armMaxPos)); //prevents from going past max
+        armComponent.setTarget(Range.clip(armComponent.getTarget(), 0, armMaxPos)); //prevents from going past max
 
         //set servo pwr
         intakeL.setPower(intakePwr);
