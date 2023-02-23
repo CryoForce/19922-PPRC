@@ -98,6 +98,13 @@ public class stateFinalAuton extends LinearOpMode {
 
     //Set all position based on selected staring location and Build Autonomous Trajectory
     public void buildAuto() {
+        initPose = new Pose2d(-54, 36, Math.toRadians(0)); //Starting pose
+        midWayPose = new Pose2d(-12, 36, Math.toRadians(0)); //Choose the pose to move forward towards signal cone
+        pickConePose = new Pose2d(-12, 55, Math.toRadians(90)); //Choose the pose to move to the stack of cones
+        dropConePose0 = new Pose2d(-12, 12, Math.toRadians(135)); //Choose the pose to move to the stack of cones
+        dropConePose1 = new Pose2d(-11, 12, Math.toRadians(135)); //Choose the pose to move to the stack of cones
+        dropConePose2 = new Pose2d(-10, 12, Math.toRadians(135)); //Choose the pose to move to the stack of cones
+
         switch (startPosition) {
             case BLUE_LEFT:
                 initPose = new Pose2d(-54, 36, Math.toRadians(0)); //Starting pose
