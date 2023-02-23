@@ -20,6 +20,11 @@ public class stateFinalAuton extends LinearOpMode {
         bronto = new HWC(hardwareMap, telemetry);
         BrontoBrain brain = new BrontoBrain(bronto);
 
+        backElbowTarget = bronto.backElbowAutonDrivePos;
+        frontElbowTarget = bronto.frontElbowAutonDrivePos;
+        backArmTarget = bronto.backArmDrivePos;
+        frontArmTarget = bronto.frontArmDrivePos;
+
         selectStartingPosition();
 
         //Build Autonomous trajectory to be used based on starting position selected
