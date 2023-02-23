@@ -125,7 +125,9 @@ public class SideStates {
         
         switch (state) {
             case MTI:
-                setTargetsOnce(armIntakePos, elbowIntakePos);
+                armComponent.setTarget(armIntakePos);
+                elbowComponent.setTarget(elbowIntakePos);
+                //setTargetsOnce(armIntakePos, elbowIntakePos);
                 armOn = true;
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)) {
@@ -139,7 +141,9 @@ public class SideStates {
                 }
                 break;
             case MTR:
-                setTargetsOnce(armRestPos, elbowRestPos);
+                armComponent.setTarget(armRestPos);
+                elbowComponent.setTarget(elbowRestPos);
+                //setTargetsOnce(armRestPos, elbowRestPos);
                 armOn = true;
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)
@@ -156,7 +160,9 @@ public class SideStates {
                 break;
 
             case MTD:
-                setTargetsOnce(armDrivePos, elbowDrivePos);
+                armComponent.setTarget(armDrivePos);
+                elbowComponent.setTarget(elbowDrivePos);
+                //setTargetsOnce(armDrivePos, elbowDrivePos);
                 armOn = true;
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)) {
@@ -172,7 +178,9 @@ public class SideStates {
                 break;
 
             case MTG:
-                setTargetsOnce(armGndPos, elbowGndPos);
+                armComponent.setTarget(armGndPos);
+                elbowComponent.setTarget(elbowGndPos);
+                //setTargetsOnce(armGndPos, elbowGndPos);
                 armOn = true;
                 elbowOn = bronto.turnElbowOnGoingDown(armComponent);
                 if (armComponent.motorCloseEnough(armCloseRange)
@@ -189,7 +197,9 @@ public class SideStates {
                 break;
 
             case MTH:
-                setTargetsOnce(armHighPos, elbowHighPos);
+                armComponent.setTarget(armHighPos);
+                elbowComponent.setTarget(elbowHighPos);
+                //setTargetsOnce(armHighPos, elbowHighPos);
                 armOn = true;
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady; //observer approval not needed atm
@@ -208,7 +218,9 @@ public class SideStates {
                 break;
 
             case MTL:
-                setTargetsOnce(armLowPos, elbowLowPos);
+                armComponent.setTarget(armLowPos);
+                elbowComponent.setTarget(elbowLowPos);
+                //setTargetsOnce(armLowPos, elbowLowPos);
                 armOn = true;
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady;
@@ -221,7 +233,9 @@ public class SideStates {
                 break;
 
             case MTM:
-                setTargetsOnce(armMedPos, elbowMedPos);
+                armComponent.setTarget(armMedPos);
+                elbowComponent.setTarget(elbowMedPos);
+                //setTargetsOnce(armMedPos, elbowMedPos);
                 armOn = true;
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady;
@@ -234,7 +248,9 @@ public class SideStates {
                 break;
 
             case MTT:
-                setTargetsOnce(armTransPos, elbowTransPos);
+                armComponent.setTarget(armTransPos);
+                elbowComponent.setTarget(elbowTransPos);
+                //setTargetsOnce(armTransPos, elbowTransPos);
                 armOn = true;
                 stateReady = bronto.turnElbowOnGoingUp(armComponent);
                 elbowOn = stateReady; //observer approval not needed atm
@@ -253,6 +269,7 @@ public class SideStates {
 
             case Rest:
                 resetHasRun();
+                elbowOn = false;
                 break;
 
             case Drive:
@@ -321,6 +338,7 @@ public class SideStates {
 
     public boolean getCompletionStatus () {return stateComplete;}
     public boolean getReadinessStatus () {return stateReady;}
+    public boolean getHasRun () {return hasRun;}
 
     public String returnColor() {
         return bronto.returnColor(intakeSensor);

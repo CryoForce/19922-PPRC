@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 
 @TeleOp(name="Observing TeleOp", group="Iterative Opmode")
 public class ObservingTeleOp extends OpMode {
@@ -51,7 +49,7 @@ public class ObservingTeleOp extends OpMode {
 
         //set arm motor directions
         bronto.frontArm.setDirection(DcMotorSimple.Direction.FORWARD);
-        bronto.frontElbow.setDirection(DcMotorSimple.Direction.FORWARD);
+        bronto.frontElbow.setDirection(DcMotorSimple.Direction.REVERSE);
         bronto.backArm.setDirection(DcMotorSimple.Direction.REVERSE);
         bronto.backElbow.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -70,6 +68,7 @@ public class ObservingTeleOp extends OpMode {
     @Override
     public void loop() {
 
+        double currentTime = getRuntime();
         //------------------------------------ GAMEPAD 1 INPUT ----------------------------------//
         if (gamepad1.dpad_up) jctHeight = 3; //high
         else if (gamepad1.dpad_right) jctHeight = 2; //med
@@ -81,7 +80,7 @@ public class ObservingTeleOp extends OpMode {
             terry.changeScoringSide(backScoring);
         }
 
-        if (gamepad1.a) {
+        if (gamepad1.a) { //CHANGE TO BUMPERS
             if (gamepad1.x) robotState = Observer.RobotStates.Rest;
             if (gamepad1.y) {
 
@@ -147,15 +146,21 @@ public class ObservingTeleOp extends OpMode {
         bronto.manualDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         //--------------------------------------- TELEMETRY ------------------------------------//
+        telemetry.addLine();
+        telemetry.addData("Loop Time w/o tmtry ", getRuntime() - currentTime);
+        telemetry.addLine();
         telemetry.addData("Bronto State: ", robotState);
         telemetry.addData("Terry State: ", terry.getRobotState());
         telemetry.addData("Front Arm State: ", terry.getFrontState());
         telemetry.addData("Back Arm State: ", terry.getBackState());
         telemetry.addData("Back Scoring: ", backScoring);
+        telemetry.addData("Front Has Set", terry.getFrontRun());
+        telemetry.addData("Back Has Set", terry.getBackRun());
         telemetry.addLine();
         telemetry.addData("frontArm Target", bronto.frontArmComponent.getTarget());
         telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
         telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
+        telemetry.addData("frontArm Angle", bronto.frontArmComponent.getArmAngle());
         telemetry.addLine();
         telemetry.addData("frontElbow Target", bronto.frontElbowComponent.getTarget());
         telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
@@ -164,14 +169,18 @@ public class ObservingTeleOp extends OpMode {
         telemetry.addData("backArm Target", bronto.backArmComponent.getTarget());
         telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
         telemetry.addData("backArm Pwr", bronto.backArm.getPower());
+        telemetry.addData("backArm Angle", bronto.backArmComponent.getArmAngle());
         telemetry.addLine();
         telemetry.addData("backElbow Target", bronto.backElbowComponent.getTarget());
         telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
         telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
         telemetry.addLine();
+        /*
         telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData ("back Distance", bronto.backDistanceSensor.getDistance(DistanceUnit.CM));
+         */
         telemetry.addLine();
+        telemetry.addData("Loop Time w/tmtry ", getRuntime() - currentTime);
         //telemetry.addData("Positions", "front Arm %d, Back Arm %d, Front Elbow %d, Back Elbow %d", bronto.frontArm.getCurrentPosition(), bronto.backArm.getCurrentPosition(), bronto.frontElbow.getCurrentPosition(), bronto.backElbow.getCurrentPosition());
         // telemetry.addData("Motors", "front left (%.2f), front right (%.2f), back left (%.2f), back right (%.2f), front arm (%.2f), front elbow (%.2f),  ", bronto.leftFront, bronto.rightFront, bronto.leftRear, bronto.rightRear, bronto.frontArm.getPower(), bronto.frontElbow.getPower());
         telemetry.update();

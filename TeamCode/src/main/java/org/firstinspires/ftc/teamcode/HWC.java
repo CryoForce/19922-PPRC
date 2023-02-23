@@ -99,14 +99,14 @@ public class HWC {
     final int FRONT_ARM_MAX_POS = 5500;
 
     int frontElbowRestPos = 0;
-    int frontElbowDrivePos = -694;
-    int frontElbowIntakePos = -204;
+    int frontElbowDrivePos = 694;
+    int frontElbowIntakePos = 204;
     int frontElbowGndPos;
-    int frontElbowTransPos =  524;
-    int frontElbowLowPos = 942;
-    int frontElbowMedPos = 1254;
-    int frontElbowHighPos = 686;
-    int frontElbowAutonDrivePos = 329;
+    int frontElbowTransPos =  -524;
+    int frontElbowLowPos = -942;
+    int frontElbowMedPos = -1254;
+    int frontElbowHighPos = -686;
+    int frontElbowAutonDrivePos = -329;
 
 
     int backArmRestPos = 0;
@@ -115,7 +115,7 @@ public class HWC {
     int backArmGndPos = 0;
     int backArmLowPos = 3646;
     int backArmMedPos = 4838;
-    int backArmHighPos = 5683;
+    int backArmHighPos = 6053;
     int backArmTransPos = backArmHighPos; //same
     final int BACK_ARM_MAX_POS = 6200;
 
@@ -156,8 +156,8 @@ public class HWC {
         backElbow = hardwareMap.get(DcMotorEx.class, "backElbow");
 
         //declare all arm components with PID values, 435rpm motors have 384.5 ppr, 60rpm has 2786.2 ppr multiplied by gear ratio
-        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.01, 0.15, 0.0005, 0.05);
-        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.01, 0.25, 0.0005, 0.05);
+        frontElbowComponent = new RobotComponents (frontElbow, 2786.2, 0.005, 0.2, 0.0008, 0.07);
+        backElbowComponent = new RobotComponents (backElbow, 2786.2, 0.01, 0.21, 0.0007, 0.045);
         frontArmComponent = new RobotComponents (frontArm, 384.5 * 24, 0.01, 0.0, 0.0000, 0);
         backArmComponent = new RobotComponents (backArm, 384.5 * 28, 0.01, .5, 0.0003, 0);
 
@@ -187,7 +187,7 @@ public class HWC {
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         frontArm.setDirection(DcMotorEx.Direction.FORWARD);
-        frontElbow.setDirection(DcMotorEx.Direction.FORWARD);
+        frontElbow.setDirection(DcMotorEx.Direction.REVERSE);
         backElbow.setDirection(DcMotorEx.Direction.FORWARD);
         backArm.setDirection(DcMotorEx.Direction.REVERSE);
 

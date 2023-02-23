@@ -180,4 +180,6 @@ public class Observer {
     public RobotStates getRobotState() {return robotState;}
     public SideStates.States getFrontState() {return trueFront.getCurrentState();}
     public SideStates.States getBackState() {return trueBack.getCurrentState();}
+    public boolean getFrontRun() {return frontSide.getHasRun();}
+    public boolean getBackRun() {return backSide.getHasRun();}
 }

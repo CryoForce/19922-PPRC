@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class RobotComponents {
 
     private final DcMotorEx motor;
-    private final double ticks_in_degrees;
+    private final double ticks_per_rotation;
     private final double ticks_per_degree;
     private final double F;
     private final PIDController controller;
@@ -14,11 +14,11 @@ public class RobotComponents {
     private final double elbowLength = 19.2; //cm
     private double target;
 
-    RobotComponents (DcMotorEx motor, double ticks_in_degrees, double p, double i, double d, double f) {
+    RobotComponents (DcMotorEx motor, double ticks_per_rotation, double p, double i, double d, double f) {
         this.motor = motor;
-        this.ticks_in_degrees = ticks_in_degrees;
+        this.ticks_per_rotation = ticks_per_rotation;
         this.F = f;
-        ticks_per_degree = ticks_in_degrees/360.0;
+        ticks_per_degree = ticks_per_rotation/360.0;
         target = 0;
 
         controller = new PIDController (p,i,d);
@@ -38,9 +38,9 @@ public class RobotComponents {
         motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         int armPos = motor.getCurrentPosition();
         double pid = controller.calculate(armPos, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degrees)) * F;
+        double ff = Math.cos(Math.toRadians(target / ticks_per_degree)) * F;
 
-        double power = pid + ff;
+        double power = (pid) + ff;
 
         motor.setPower(power);
 
@@ -61,15 +61,15 @@ public class RobotComponents {
         not confident about this but should give the encoder position correctly based on angle
         divides by 4 because that gives the 0 degrees (90 degrees relative to the arm), multiplied by said value and added to it
          */
-        return (ticks_per_degree * a1 + (ticks_in_degrees / 4.0));
+        return (ticks_per_degree * a1 + (ticks_per_rotation / 4.0));
     }
 
     public double armTicksUsingAngle (double a) {
-        return (ticks_per_degree * a + (ticks_in_degrees / 4.0));
+        return (ticks_per_degree * a + (ticks_per_rotation / 4.0));
     }
 
     public double getArmAngle () {
-        return (motor.getCurrentPosition()-(ticks_in_degrees / 4.0))/ticks_per_degree;
+        return (motor.getCurrentPosition()-(ticks_per_rotation / 4.0))/ticks_per_degree;
     }
 
     public double armAngleUsingCoords (double x, double y) {
