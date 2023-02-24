@@ -43,7 +43,7 @@ public class ObservingTeleOp extends OpMode {
 
         //set driving motor directions
         bronto.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        bronto.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        bronto.leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
         bronto.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         bronto.rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -80,7 +80,7 @@ public class ObservingTeleOp extends OpMode {
             terry.changeScoringSide(backScoring);
         }
 
-        if (gamepad1.a) { //CHANGE TO BUMPERS
+        if (gamepad1.left_bumper) { //CHANGE TO BUMPERS
             if (gamepad1.x) robotState = Observer.RobotStates.Rest;
             if (gamepad1.y) {
 
@@ -104,12 +104,16 @@ public class ObservingTeleOp extends OpMode {
         }
 
         //------------------------------------ SETTING CYCLE ------------------------------------//
+        /*
         if (terry.getRobotState() != Observer.RobotStates.Unknown) {
             terry.setCycleState(robotState);
         } else {
             robotState = Observer.RobotStates.Unknown;
             terry.setCycleState(robotState);
         }
+        */
+        terry.setCycleState(robotState);
+
 
         //------------------------------------ GAMEPAD 2 INPUT ---------------------------------//
         /*

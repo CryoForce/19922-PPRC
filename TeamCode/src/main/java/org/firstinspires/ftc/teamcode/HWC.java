@@ -90,43 +90,43 @@ public class HWC {
     //We should both be using these in all our code. Makes it much easier to tune as only one person has to
     int frontArmRestPos = 0;
     int frontArmDrivePos = 728;
-    int frontArmIntakePos = 0; //changed to 0
-    int frontArmGndPos = 0;
-    int frontArmLowPos;
-    int frontArmMedPos;
-    int frontArmHighPos = 4942;
+    int frontArmIntakePos = 2304; //changed back from 0
+    int frontArmGndPos = frontArmIntakePos;
+    int frontArmLowPos = frontArmIntakePos; //optimize moving time
+    int frontArmHighPos = 4983;
+    int frontArmMedPos = frontArmHighPos;
     int frontArmTransPos = frontArmHighPos;
     final int FRONT_ARM_MAX_POS = 5500;
 
     int frontElbowRestPos = 0;
     int frontElbowDrivePos = 694;
-    int frontElbowIntakePos = 204;
-    int frontElbowGndPos;
-    int frontElbowTransPos =  -524;
-    int frontElbowLowPos = -942;
-    int frontElbowMedPos = -1254;
-    int frontElbowHighPos = -686;
+    int frontElbowIntakePos = -1222;
+    int frontElbowGndPos = frontElbowIntakePos;
+    int frontElbowTransPos = -490; //needs a from front and from back
+    int frontElbowLowPos = -289;
+    int frontElbowMedPos = -1761;
+    int frontElbowHighPos = -1120;
     int frontElbowAutonDrivePos = -329;
 
 
     int backArmRestPos = 0;
     int backArmDrivePos = 906;
-    int backArmIntakePos = 1325;
-    int backArmGndPos = 0;
-    int backArmLowPos = 3646;
-    int backArmMedPos = 4838;
-    int backArmHighPos = 6053;
+    int backArmIntakePos = 2736;
+    int backArmGndPos = backArmIntakePos;
+    int backArmLowPos = backArmIntakePos;
+    int backArmHighPos = 5938;
+    int backArmMedPos = backArmHighPos;
     int backArmTransPos = backArmHighPos; //same
     final int BACK_ARM_MAX_POS = 6200;
 
     int backElbowRestPos = 0;
     int backElbowDrivePos = 673;
-    int backElbowIntakePos = 319;
-    int backElbowGndPos = 0;
-    int backElbowTransPos = -417;
-    int backElbowLowPos = 1679;
-    int backElbowMedPos = 1365;
-    int backElbowHighPos = -1050;
+    int backElbowIntakePos = frontElbowIntakePos;
+    int backElbowGndPos = backElbowIntakePos;
+    int backElbowTransPos = -400;
+    int backElbowLowPos = frontElbowLowPos;
+    int backElbowMedPos = frontElbowMedPos;
+    int backElbowHighPos = frontElbowHighPos;
     int backElbowAutonDrivePos = -366;
 
     int backHighDist = 93;

@@ -137,7 +137,7 @@ public class SideStates {
                         stateComplete = true;
                     }
                 } else {
-                    armOn = bronto.turnArmOnGoingDown(armComponent, elbowComponent);
+                    //armOn = bronto.turnArmOnGoingDown(armComponent, elbowComponent);
                 }
                 break;
             case MTR:
