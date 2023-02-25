@@ -248,12 +248,12 @@ public class HWC {
     }
 
     public boolean turnElbowOnGoingDown(RobotComponents armComponent) {
-        if (armComponent.getArmAngle() < 0) {
+        if (armComponent.getArmAngle() < 20) {
             return true;
         } return false;
     }
     public boolean turnArmOnGoingDown(RobotComponents armComponent, RobotComponents elbowComponent) {
-        if (armComponent.getArmAngle() < -30
+        if (armComponent.getArmAngle() < -20
                 && !elbowComponent.motorCloseEnough(100)) { //100 is random large range
             return false;
         }

@@ -156,6 +156,51 @@ public class Observer {
                     }
                 } else backSide.setArmState(SideStates.States.MTH);
                 break;
+            case MedJct:
+                if (backSide.getCurrentState() == SideStates.States.MTM) {
+                    backSide.setArmState(SideStates.States.MTM);
+                    if (backSide.getReadinessStatus()) {
+                        frontSide.setArmState(SideStates.States.MTI);
+                    }
+                    if (backSide.getCompletionStatus()) {
+                        backSide.setArmState(SideStates.States.Delivery);
+                    }
+                } else if (backSide.getCurrentState() == SideStates.States.Delivery) {
+                    if (backSide.getCompletionStatus()) {
+                        robotState = RobotStates.Unknown;
+                    }
+                } else backSide.setArmState(SideStates.States.MTM);
+                break;
+            case LowJct:
+                if (backSide.getCurrentState() == SideStates.States.MTL) {
+                    backSide.setArmState(SideStates.States.MTL);
+                    if (backSide.getReadinessStatus()) {
+                        frontSide.setArmState(SideStates.States.MTI);
+                    }
+                    if (backSide.getCompletionStatus()) {
+                        backSide.setArmState(SideStates.States.Delivery);
+                    }
+                } else if (backSide.getCurrentState() == SideStates.States.Delivery) {
+                    if (backSide.getCompletionStatus()) {
+                        robotState = RobotStates.Unknown;
+                    }
+                } else backSide.setArmState(SideStates.States.MTL);
+                break;
+            case GndJct:
+                if (backSide.getCurrentState() == SideStates.States.MTG) {
+                    backSide.setArmState(SideStates.States.MTG);
+                    if (backSide.getReadinessStatus()) {
+                        frontSide.setArmState(SideStates.States.MTI);
+                    }
+                    if (backSide.getCompletionStatus()) {
+                        backSide.setArmState(SideStates.States.Delivery);
+                    }
+                } else if (backSide.getCurrentState() == SideStates.States.Delivery) {
+                    if (backSide.getCompletionStatus()) {
+                        robotState = RobotStates.Unknown;
+                    }
+                } else backSide.setArmState(SideStates.States.MTG);
+                break;
             case Unknown:
                 frontSide.setArmState(SideStates.States.Unknown);
                 backSide.setArmState(SideStates.States.Unknown);

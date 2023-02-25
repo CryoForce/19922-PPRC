@@ -39,8 +39,7 @@ public class RobotComponents {
         int armPos = motor.getCurrentPosition();
         double pid = controller.calculate(armPos, target);
         double ff = Math.cos(Math.toRadians(target / ticks_per_degree)) * F;
-
-        double power = (pid) + ff;
+        double power = pid + ff;
 
         motor.setPower(power);
 

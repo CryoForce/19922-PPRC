@@ -296,10 +296,6 @@ public class SideStates {
                 }
                 break;
 
-            case Pause:
-                resetHasRun();
-                break;
-
             case Unknown:
                 resetHasRun();
                 break;

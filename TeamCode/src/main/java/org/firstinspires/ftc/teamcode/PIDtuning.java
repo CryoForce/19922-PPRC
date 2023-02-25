@@ -42,6 +42,9 @@ public class PIDtuning extends OpMode {
     @Override
     public void loop() {
         double currentTime = getRuntime();
+        while (getRuntime() - currentTime < .05) {
+
+        }
         if (gamepad1.dpad_down) {
             arm_motor= hardwareMap.get(DcMotorEx.class, "backElbow");
             name = "back elbow";

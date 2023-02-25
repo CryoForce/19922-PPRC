@@ -155,6 +155,7 @@ public class ObservingTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("Bronto State: ", robotState);
         telemetry.addData("Terry State: ", terry.getRobotState());
+        telemetry.addData("Junction Height", jctHeight);
         telemetry.addData("Front Arm State: ", terry.getFrontState());
         telemetry.addData("Back Arm State: ", terry.getBackState());
         telemetry.addData("Back Scoring: ", backScoring);
@@ -164,20 +165,24 @@ public class ObservingTeleOp extends OpMode {
         telemetry.addData("frontArm Target", bronto.frontArmComponent.getTarget());
         telemetry.addData("frontArm Pos", bronto.frontArm.getCurrentPosition());
         telemetry.addData("frontArm Pwr", bronto.frontArm.getPower());
+        telemetry.addData("frontArm Velocity", bronto.frontArm.getVelocity());
         telemetry.addData("frontArm Angle", bronto.frontArmComponent.getArmAngle());
         telemetry.addLine();
         telemetry.addData("frontElbow Target", bronto.frontElbowComponent.getTarget());
         telemetry.addData("frontElbow Pos", bronto.frontElbow.getCurrentPosition());
         telemetry.addData("frontElbow Pwr", bronto.frontElbow.getPower());
+        telemetry.addData("frontElbow Velocity", bronto.frontElbow.getVelocity());
         telemetry.addLine();
         telemetry.addData("backArm Target", bronto.backArmComponent.getTarget());
         telemetry.addData("backArm Pos", bronto.backArm.getCurrentPosition());
         telemetry.addData("backArm Pwr", bronto.backArm.getPower());
+        telemetry.addData("backArm Velocity", bronto.backArm.getVelocity());
         telemetry.addData("backArm Angle", bronto.backArmComponent.getArmAngle());
         telemetry.addLine();
         telemetry.addData("backElbow Target", bronto.backElbowComponent.getTarget());
         telemetry.addData("backElbow Pos", bronto.backElbow.getCurrentPosition());
         telemetry.addData("backElbow Pwr", bronto.backElbow.getPower());
+        telemetry.addData("backElbow Velocity", bronto.backElbow.getVelocity());
         telemetry.addLine();
         /*
         telemetry.addData ("front Distance", bronto.frontDistanceSensor.getDistance(DistanceUnit.CM));
